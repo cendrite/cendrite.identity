@@ -36,7 +36,7 @@ public class UserLifeCycleService : IUserLifeCycleService
     public void SoftDelete(Aggregates.User user)
     {
         user.SetDelete();
-        user.AddDomainEvent(new UserDeletedEvent(user.Id, user.Email.Address));
+        user.AddDomainEvent(new UserDeletedEvent(user.Id, user.Email?.Address ?? string.Empty));
     }
 
     public void RevertSoftDelete(Aggregates.User user)

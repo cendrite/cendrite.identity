@@ -44,7 +44,7 @@ public class VerificationCodeGeneratedEventHandlerTest : IntegrationTestBase
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
-        Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.To == user.Email.Address)
+        Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.To == user.Email!.Address)
             .Should().NotBeNull();
     }
 
@@ -64,7 +64,7 @@ public class VerificationCodeGeneratedEventHandlerTest : IntegrationTestBase
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
-        Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.To == user.Email.Address)
+        Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.To == user.Email!.Address)
             .Should().NotBeNull();
         Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.Body.Contains("Here is your login verification code: "))
             .Should().NotBeNull();

@@ -53,7 +53,7 @@ namespace Cendrite.Authentication.Test.Unit.ServiceTest
 
             // Assert
             result.Success.Should().BeTrue();
-            result.Value.Email.Address.Should().Be(email);
+            result.Value.Email!.Address.Should().Be(email);
             result.Value.IsVerified.Should().BeFalse();
             result.Value.VerificationCodes.Should().HaveCount(1);
         }

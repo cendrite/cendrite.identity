@@ -10,8 +10,9 @@ namespace Identity.Domain.Aggregates;
 
 public class User : AggregateRoot
 {
-    public Email Email { get; init; } = null!;
-    public Password Password { get; private set; } = null!;
+    public Email? Email { get; init; }
+    public Password? Password { get; private set; }
+    public string? AccountPublicKey { get; private set; }
     public bool IsVerified { get; private set; }
     private readonly List<UserVerificationCode> _verificationCodes = [];
     private readonly List<Device> _devices = [];
@@ -25,6 +26,12 @@ public class User : AggregateRoot
         Email = email;
         Password = password;
         IsVerified = isVerified;
+    }
+
+    public User(Guid id, string accountPublicKey) : base(id)
+    {
+        AccountPublicKey = accountPublicKey;
+        IsVerified = true;
     }
 
     /// <summary>

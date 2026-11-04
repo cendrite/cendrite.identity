@@ -23,7 +23,7 @@ public class LoginEndpointTest(IntegrationTestFactory<Program, IdentityDbContext
 
         var command = new LoginCommand
         {
-            Email = user.Email.Address,
+            Email = user.Email!.Address,
             Password = "TestPassword?123",
         };
 
@@ -47,7 +47,7 @@ public class LoginEndpointTest(IntegrationTestFactory<Program, IdentityDbContext
 
         var command = new LoginCommand
         {
-            Email = user.Email.Address,
+            Email = user.Email!.Address,
             Password = "TestPassword?12323123", // Invalid password
         };
 

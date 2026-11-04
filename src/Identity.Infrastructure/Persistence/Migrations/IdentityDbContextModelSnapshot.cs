@@ -155,6 +155,11 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("AccountPublicKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("account_public_key");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created");
@@ -173,6 +178,10 @@ namespace Identity.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountPublicKey")
+                        .IsUnique()
+                        .HasDatabaseName("idx_account_public_key");
+
                     b.ToTable("user", (string)null);
                 });
 
@@ -186,6 +195,16 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("app_version");
+
+                    b.Property<string>("ApprovalSignature")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("approval_signature");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("approved_by");
 
                     b.Property<Guid>("ConnectionId")
                         .HasColumnType("uuid")
@@ -314,7 +333,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Address")
-                                .IsRequired()
                                 .HasMaxLength(255)
                                 .HasColumnType("citext")
                                 .HasColumnName("email");
@@ -337,7 +355,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("HashedPassword")
-                                .IsRequired()
                                 .HasMaxLength(255)
                                 .HasColumnType("character varying(255)")
                                 .HasColumnName("password");
@@ -350,11 +367,9 @@ namespace Identity.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("UserId");
                         });
 
-                    b.Navigation("Email")
-                        .IsRequired();
+                    b.Navigation("Email");
 
-                    b.Navigation("Password")
-                        .IsRequired();
+                    b.Navigation("Password");
                 });
 
             modelBuilder.Entity("Identity.Domain.Entities.Device", b =>

@@ -10,7 +10,7 @@ public sealed record CreateUserDto
         return new CreateUserDto
         {
             Id = user.Id,
-            Email = user.Email.Address,
+            Email = user.Email!.Address,
         };
     }
 }

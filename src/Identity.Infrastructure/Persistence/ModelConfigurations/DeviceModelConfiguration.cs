@@ -43,6 +43,14 @@ public class DeviceModelConfiguration : BaseModelConfiguration<Device>
             .HasColumnName("platform")
             .IsRequired();
 
+        builder.Property(d => d.ApprovedBy)
+            .HasColumnName("approved_by")
+            .HasMaxLength(64);
+
+        builder.Property(d => d.ApprovalSignature)
+            .HasColumnName("approval_signature")
+            .HasMaxLength(128);
+
         builder.HasIndex(d => d.UserId)
             .HasDatabaseName("idx_device_user_id");
 

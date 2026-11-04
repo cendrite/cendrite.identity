@@ -42,7 +42,7 @@ public class VerificationCodeGeneratedEventHandler(
         var emailMessage = new SendEmailMessage()
         {
             CorrelationId = Guid.NewGuid(),
-            To = user.Email.Address,
+            To = user.Email!.Address,
             Subject = "Cendrite Verification",
             Body = message + verificationCode.Code.Value,
             CausationId = null,

@@ -5,6 +5,7 @@ using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Create;
 using Identity.Application.Features.User.Commands.Delete;
+using Identity.Application.Features.User.Commands.Signup;
 using Identity.Application.Features.User.Commands.Update.ResendVerificationCode;
 using Identity.Application.Features.User.Commands.Update.Verify;
 using Mediator;
@@ -25,6 +26,14 @@ internal sealed class UserEndpoints : IEndpoint
                 return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
             })
             .Produces<CreateUserDto>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapPost("/signup", async ([FromBody] SignupCommand cmd, ISender sender) =>
+            {
+                var result = await sender.Send(cmd);
+                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .Produces<SignupDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapDelete("/", async (ISender sender, HttpContext ctx) =>

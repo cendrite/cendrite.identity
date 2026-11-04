@@ -19,7 +19,7 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
         {
             email.Property(e => e.Address)
                 .HasColumnName("email")
-                .IsRequired()
+                .IsRequired(false)
                 .HasColumnType("citext") // Ensure case-insensitive to prevent duplicate emails
                 .HasMaxLength(255);
 
@@ -31,9 +31,17 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
         {
             pw.Property(p => p.HashedPassword)
                 .HasColumnName("password")
-                .IsRequired()
+                .IsRequired(false)
                 .HasMaxLength(255);
         });
+
+        builder.Property(u => u.AccountPublicKey)
+            .HasColumnName("account_public_key")
+            .HasMaxLength(64);
+
+        builder.HasIndex(u => u.AccountPublicKey)
+            .HasDatabaseName("idx_account_public_key")
+            .IsUnique();
 
         builder.Property(u => u.IsVerified)
             .HasColumnName("is_verified")
