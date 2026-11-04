@@ -4,6 +4,7 @@ using Identity.Application.Features.Authentication.Commands.Logout;
 using Identity.Application.Features.Authentication.Commands.VerifyLogin;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
+using Identity.Application.Features.Authentication.Queries.GetSignupChallenge;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
@@ -57,6 +58,13 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             .Produces<GetNonceDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized);
+
+        group.MapGet("/signup-challenge", async (ISender sender) =>
+            {
+                var result = await sender.Send(new GetSignupChallengeQuery());
+                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .Produces<GetSignupChallengeDto>();
 
         group.MapPost("/verify-nonce", async ([FromBody] VerifyNonceCommand cmd, ISender sender) =>
             {

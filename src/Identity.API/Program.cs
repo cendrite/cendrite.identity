@@ -27,6 +27,7 @@ builder.Services.AddObservability();
 builder.Services.AddDomain();
 
 builder.Services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+builder.Services.Configure<SignupChallengeSettings>(configuration.GetSection("SignupChallenge"));
 builder.Services.AddApplication(Assembly.Load("Identity.Application"));
 
 builder.Services.AddInfrastructure(configuration, Assembly.Load("Identity.Infrastructure"));
