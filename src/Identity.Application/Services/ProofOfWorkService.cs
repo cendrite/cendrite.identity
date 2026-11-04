@@ -1,13 +1,9 @@
 using System.Buffers.Binary;
 using System.Numerics;
 using System.Security.Cryptography;
+using Identity.Application.Interfaces;
 
 namespace Identity.Application.Services;
-
-public interface IProofOfWorkService
-{
-    bool IsSolved(byte[] challenge, ulong nonce, int difficulty);
-}
 
 public sealed class ProofOfWorkService : IProofOfWorkService
 {
@@ -31,7 +27,7 @@ public sealed class ProofOfWorkService : IProofOfWorkService
                 continue;
             }
 
-            return count + BitOperations.LeadingZeroCount((uint)b) - 24;
+            return count + BitOperations.LeadingZeroCount(b) - 24;
         }
 
         return count;
