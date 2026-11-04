@@ -41,7 +41,7 @@ public class UserCreatedEventHandlerTest : IntegrationTestBase
         await _sut.Handle(@event, CancellationToken.None);
 
         // Assert
-        Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.To == user.Email.Address).Should().NotBeNull();
+        Harness.Published.Select<SendEmailMessage>().FirstOrDefault(uc => uc.Context.Message.To == user.Email!.Address).Should().NotBeNull();
     }
 
     [Fact]

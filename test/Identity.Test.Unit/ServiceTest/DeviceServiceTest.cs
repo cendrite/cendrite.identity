@@ -18,7 +18,7 @@ public class DeviceServiceTest
         var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Testpass?932"), true);
 
         // Act
-        var result = _sut.RegisterDevice(user, "publicKey", "1.0.0", DeviceType.Mobile, DevicePlatform.iOS);
+        var result = _sut.RegisterDevice(user, "publicKey", "1.0.0", DeviceType.Mobile, DevicePlatform.iOS, null, null);
 
         // Assert
         result.Should().NotBeNull();

@@ -29,7 +29,7 @@ public class CreateUserEndpointTest(IntegrationTestFactory<Program, IdentityDbCo
         Harness.Published.Select<CreateUserProfileMessage>().Where(cr => cr.Context.Message.Username == "TestUser").Should().HaveCount(1);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         Db.User.Count().Should().Be(1);
-        Db.User.First().Email.Address.Should().Be(req.Email);
+        Db.User.First().Email!.Address.Should().Be(req.Email);
         Db.OutboxMessage.Count().Should().Be(1);
     }
 

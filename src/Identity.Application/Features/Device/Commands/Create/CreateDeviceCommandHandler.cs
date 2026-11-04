@@ -44,7 +44,7 @@ public class CreateDeviceCommandHandler(
             return Result.Fail<CreateDeviceDto>(Errors.General.Unauthorized());
         }
 
-        var device = deviceService.RegisterDevice(user, cmd.Base64DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform);
+        var device = deviceService.RegisterDevice(user, cmd.Base64DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, null, null);
 
         var createClientResult = await CreateClient(device.Id, device.ConnectionId, device.UserId);
 

@@ -41,7 +41,7 @@ public class CreateUserCommandHandlerTest : IntegrationTestBase
 
         var command = new CreateUserCommand()
         {
-            Email = user.Email.Address,
+            Email = user.Email!.Address,
             Password = "validPassword=?23",
             Username = "validUsername"
         };
