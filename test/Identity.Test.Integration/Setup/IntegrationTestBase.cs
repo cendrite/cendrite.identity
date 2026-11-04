@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Identity.Test.Integration.Setup;
 
 [Collection("AuthenticationApplication")]
-public class IntegrationTestBase : IDisposable
+public class IntegrationTestBase : IAsyncLifetime
 {
     protected readonly IdentityDbContext Db;
     protected readonly HttpClient Client;
@@ -24,15 +24,16 @@ public class IntegrationTestBase : IDisposable
         Cache = scope.ServiceProvider.GetRequiredService<IValkeyCacheService>();
         Db.Database.EnsureCreated();
         Client = factory.CreateClient();
-        Harness.Start();
     }
 
-    public void Dispose()
+    public Task InitializeAsync() => Harness.Start();
+
+    public async Task DisposeAsync()
     {
-        Db.VerificationCode.ExecuteDelete();
-        Db.User.ExecuteDelete();
-        Db.OutboxMessage.ExecuteDelete();
-        Db.Device.ExecuteDelete();
-        Harness.Stop();
+        await Db.VerificationCode.ExecuteDeleteAsync();
+        await Db.User.ExecuteDeleteAsync();
+        await Db.OutboxMessage.ExecuteDeleteAsync();
+        await Db.Device.ExecuteDeleteAsync();
+        await Harness.Stop();
     }
 }
