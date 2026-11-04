@@ -33,7 +33,7 @@ public sealed class UserCreatedEventHandler(
         var emailMessage = new SendEmailMessage
         {
             CorrelationId = Guid.NewGuid(),
-            To = user.Email.Address,
+            To = user.Email!.Address,
             Subject = "Welcome to Cendrite",
             Body = "Welcome to Cendrite! Here is your verification code: " + verificationCode.Code.Value,
             CausationId = null,
