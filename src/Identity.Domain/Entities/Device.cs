@@ -14,6 +14,8 @@ public class Device : Entity
     public DevicePlatform Platform { get; init; }
     public string AppVersion { get; private set; } = null!;
     public Guid UserId { get; private set; }
+    public string? ApprovedBy { get; private init; }
+    public string? ApprovalSignature { get; private init; }
 
     public Device() : base(Guid.Empty) { } // For EF Core
 
@@ -22,7 +24,9 @@ public class Device : Entity
         string appVersion,
         DeviceType type,
         DevicePlatform platform,
-        Guid userId) : base(id)
+        Guid userId,
+        string? approvedBy = null,
+        string? approvalSignature = null) : base(id)
     {
         Name = GenerateName(platform);
         PublicKey = publicKey;
@@ -31,6 +35,8 @@ public class Device : Entity
         Type = type;
         Platform = platform;
         ConnectionId = Guid.NewGuid();
+        ApprovedBy = approvedBy;
+        ApprovalSignature = approvalSignature;
     }
 
     /// <summary>
