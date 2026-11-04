@@ -18,6 +18,10 @@ public sealed class GetSignupChallengeQueryHandler(
 
         await signupChallengeCache.AddChallengeAsync(challenge, ct);
 
-        return Result.Ok(GetSignupChallengeDto.Map(challenge));
+        return Result.Ok(new GetSignupChallengeDto(
+            challenge.Id, 
+            challenge.ChallengeValue, 
+            challenge.Difficulty, 
+            challenge.ExpiresAt));
     }
 }
