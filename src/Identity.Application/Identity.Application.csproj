@@ -13,7 +13,7 @@
     <ItemGroup>
       <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
       <PackageReference Include="PrivacyPass" Version="0.2.0" />
-      <PackageReference Include="Cendrite.Message.Contracts" Version="4.0.0" />
+      <PackageReference Include="Cendrite.Message.Contracts" Version="5.0.0" />
       <PackageReference Include="FluentValidation" Version="12.1.1" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
       <PackageReference Include="MassTransit.Abstractions" Version="8.5.9" />

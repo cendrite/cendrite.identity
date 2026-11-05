@@ -19,7 +19,6 @@ public class UserDeletedEventHandler(
         {
             CorrelationId = Guid.NewGuid(),
             UserId = notification.UserId,
-            Email = string.Empty,
             CausationId = null
         };
 
