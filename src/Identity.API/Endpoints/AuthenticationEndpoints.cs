@@ -1,4 +1,5 @@
 using Identity.API.Common;
+using Identity.Application.Features.Authentication.Commands.BeginRecovery;
 using Identity.Application.Features.Authentication.Commands.Logout;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
@@ -42,6 +43,15 @@ internal sealed class AuthenticationEndpoints : IEndpoint
                 return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
             })
             .Produces<GetSignupChallengeDto>();
+
+        group.MapPost("/recovery-challenge", async ([FromBody] BeginRecoveryCommand cmd, ISender sender) =>
+            {
+                var result = await sender.Send(cmd);
+                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .Produces<BeginRecoveryDto>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/verify-nonce", async ([FromBody] VerifyNonceCommand cmd, ISender sender) =>
             {

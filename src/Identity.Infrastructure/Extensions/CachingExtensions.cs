@@ -39,6 +39,7 @@ internal static class CachingExtensions
         services.AddSingleton<IValkeyCacheService, ValkeyCacheService>();
         services.AddScoped<INonceCacheService, NonceCacheService>();
         services.AddScoped<ISignupChallengeCache, SignupChallengeCache>();
+        services.AddScoped<IRecoveryChallengeCache, RecoveryChallengeCache>();
         services.AddSingleton<IRateLimiter, RedisSlidingWindowRateLimiter>();
     }
 }
