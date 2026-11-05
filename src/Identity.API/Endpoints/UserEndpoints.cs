@@ -6,7 +6,6 @@ using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Create;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Application.Features.User.Commands.Signup;
-using Identity.Application.Features.User.Commands.Update.Verify;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,16 +44,6 @@ internal sealed class UserEndpoints : IEndpoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
-
-        group.MapPut("/verify", async ([FromBody] VerifyUserCommand cmd, ISender sender) =>
-            {
-                var result = await sender.Send(cmd);
-                return result.Success ? Results.Ok() : result.ToProblemDetails();
-            })
-            .Produces(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/device", async ([FromBody] CreateDeviceCommand cmd, ISender sender) =>
             {
