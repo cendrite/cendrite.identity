@@ -1,5 +1,4 @@
 using Identity.API.Common;
-using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Application.Features.Authentication.Commands.Logout;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
@@ -15,16 +14,6 @@ internal sealed class AuthenticationEndpoints : IEndpoint
     {
         var group = routeBuilder.MapGroup("api/authentication")
             .WithTags("Authentication");
-
-        group.MapPost("/login", async ([FromBody] LoginCommand cmd, ISender sender) =>
-            {
-                var result = await sender.Send(cmd);
-                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
-            })
-            .Produces<LoginDto>()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapPost("/logout", async (ISender sender, HttpContext ctx) =>
             {
