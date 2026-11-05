@@ -3,6 +3,7 @@ using Identity.Application.Features.Device.Commands.Delete;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Delete;
+using Identity.Application.Features.User.Commands.Recover;
 using Identity.Application.Features.User.Commands.Signup;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,14 @@ internal sealed class UserEndpoints : IEndpoint
                 return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
             })
             .Produces<SignupDto>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapPost("/recover", async ([FromBody] RecoverCommand cmd, ISender sender) =>
+            {
+                var result = await sender.Send(cmd);
+                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .Produces<RecoverDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapDelete("/", async (ISender sender, HttpContext ctx) =>
