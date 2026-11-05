@@ -1,4 +1,3 @@
-using Cendrite.Domain.Common;
 using FluentValidation;
 using Identity.Application.Features.User.Validators;
 using Identity.Domain.Common;
@@ -10,6 +9,7 @@ public class BeginRecoveryCommandValidator : AbstractValidator<BeginRecoveryComm
     public BeginRecoveryCommandValidator()
     {
         RuleFor(x => x.AccountPublicKey)
-            .MustBePublicKey().WithMessage(Errors.General.UnexpectedValue(nameof(BeginRecoveryCommand.AccountPublicKey)).Description);
+            .MustBePublicKey()
+            .WithMessage(Errors.General.UnexpectedValue(nameof(BeginRecoveryCommand.AccountPublicKey)).Description);
     }
 }
