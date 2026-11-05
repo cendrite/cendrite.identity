@@ -13,6 +13,7 @@ using Identity.Domain.Common;
 using Identity.Domain.Constants;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -91,6 +92,7 @@ public class RecoverCommandHandlerTest
             DeviceConstants.ApprovedByAccount, "device-approval")).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCache.DeleteChallengeAsync(_challenge.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        _user.DomainEvents.Should().ContainSingle(e => e is DeviceAddedEvent && ((DeviceAddedEvent)e).DeviceId == result.Value.DeviceId);
     }
 
     [Fact]
