@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Crypto.Parameters;
+﻿using System.Text;
+using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 
 namespace Identity.Test.Integration.Setup.Helpers;
@@ -7,7 +8,7 @@ public static class Ed25519Helper
 {
     public static string SignNonce(string nonce, string privateKeyBase64)
     {
-        var nonceBytes = Convert.FromBase64String(nonce);
+        byte[] nonceBytes = [.. Encoding.ASCII.GetBytes("cendrite-auth-v1"), .. Convert.FromBase64String(nonce)];
         var privateKey = Convert.FromBase64String(privateKeyBase64);
         var privateKeyParam = new Ed25519PrivateKeyParameters(privateKey, 0);
 

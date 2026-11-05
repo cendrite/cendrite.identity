@@ -13,6 +13,8 @@ using Identity.Test.Integration.Setup;
 using Identity.Test.Integration.Setup.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Signers;
 
 namespace Identity.Test.Integration.AuthenticationTest.CommandTest.VerifyNonce;
 
@@ -104,6 +106,44 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
             DeviceId = device.Id,
             NonceId = nonce.Id,
             Nonce = "",
+        };
+
+        // Act
+        var result = await _sut.Handle(cmd, CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeFalse();
+        result.Error.Should().BeEquivalentTo(Errors.General.Unauthorized());
+    }
+
+    [Fact]
+    public async Task Handle_Given_Signature_Over_Raw_Nonce_Without_Label_Should_Return_Unauthorized()
+    {
+        // Arrange
+        const string publicKey = "VlmK9Smh3RVtT7CHaHW5rbrYAWeM9ImVdP6WhmnMqK0=";
+        const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
+
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        user.AddDevice(device);
+
+        var nonce = Nonce.Create(user.Id, device.Id);
+        await Cache.SetAsync(nonce.Id.ToString(), nonce, CancellationToken.None, TimeSpan.FromMinutes(10));
+
+        Db.User.Add(user);
+        await Db.SaveChangesAsync();
+
+        var signer = new Ed25519Signer();
+        signer.Init(true, new Ed25519PrivateKeyParameters(Convert.FromBase64String(privateKey), 0));
+        var rawNonce = Convert.FromBase64String(nonce.NonceValue);
+        signer.BlockUpdate(rawNonce, 0, rawNonce.Length);
+
+        var cmd = new VerifyNonceCommand
+        {
+            UserId = user.Id,
+            DeviceId = device.Id,
+            NonceId = nonce.Id,
+            Nonce = Convert.ToBase64String(signer.GenerateSignature()),
         };
 
         // Act
