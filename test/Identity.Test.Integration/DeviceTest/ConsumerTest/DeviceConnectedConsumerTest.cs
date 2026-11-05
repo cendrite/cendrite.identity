@@ -7,7 +7,6 @@ using Identity.Application.Features.Device.Consumers;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
-using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using MassTransit;
@@ -33,7 +32,7 @@ public class DeviceConnectedConsumerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Context_Should_Update_Device_LastSeen()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test98KJl?????"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var device = new Device(Guid.NewGuid(), "test", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
@@ -59,7 +58,7 @@ public class DeviceConnectedConsumerTest : IntegrationTestBase
     public async Task Handle_Given_Throws_Exception_Should_Not_Update_Device()
     {
         //Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test98KJl?????"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var device = new Device(Guid.NewGuid(), "test", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 

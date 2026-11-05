@@ -3,7 +3,6 @@ using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Services.User;
-using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +30,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
     public async Task Handle_When_Command_Is_Valid_Should_Delete_User()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kajshas=?2323S"), false);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         await Db.AddAsync(user);
         await Db.SaveChangesAsync();
 
@@ -70,7 +69,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
     public async Task Handle_When_User_Is_Already_Deleted_Should_Return_UnspecifiedError()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kajshas=?2323S"), false);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         user.SetDelete();
         await Db.AddAsync(user);
         await Db.SaveChangesAsync();

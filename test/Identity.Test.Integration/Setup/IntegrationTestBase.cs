@@ -30,7 +30,6 @@ public class IntegrationTestBase : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await Db.VerificationCode.ExecuteDeleteAsync();
         await Db.User.ExecuteDeleteAsync();
         await Db.OutboxMessage.ExecuteDeleteAsync();
         await Db.Device.ExecuteDeleteAsync();

@@ -13,13 +13,13 @@ public class UserDeletedEventHandler(
 {
     public async ValueTask Handle(UserDeletedEvent notification, CancellationToken cancellationToken)
     {
-        logger.LogInformation("User with id {UserId} and email {Email} has been deleted", notification.UserId, notification.Email);
+        logger.LogInformation("User with id {UserId} has been deleted", notification.UserId);
 
         var message = new UserDeletedMessage
         {
             CorrelationId = Guid.NewGuid(),
             UserId = notification.UserId,
-            Email = notification.Email,
+            Email = string.Empty,
             CausationId = null
         };
 

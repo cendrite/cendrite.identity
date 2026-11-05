@@ -8,7 +8,6 @@ namespace Identity.Infrastructure.Persistence.Context;
 public class IdentityDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> User { get; init; }
-    public DbSet<UserVerificationCode> VerificationCode { get; init; }
     public DbSet<Device> Device { get; init; }
     public DbSet<OutboxMessage> OutboxMessage { get; init; }
     public DbSet<SigningKey> SigningKey { get; init; }

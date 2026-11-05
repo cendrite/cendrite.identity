@@ -51,19 +51,19 @@ public class ProcessOutboxMessageJobTests
     public async Task Execute_WhenValidMessages_ShouldProcessAndMarkAsProcessed()
     {
         // Arrange
-        var userCreatedEvent = new UserCreatedEvent(Guid.NewGuid());
+        var userCreatedEvent = new UserDeletedEvent(Guid.NewGuid());
 
         var message = new OutboxMessage
         {
             Id = Guid.NewGuid(),
-            Type = typeof(UserCreatedEvent).AssemblyQualifiedName!,
+            Type = typeof(UserDeletedEvent).AssemblyQualifiedName!,
             Content = JsonConvert.SerializeObject(userCreatedEvent)
         };
 
         A.CallTo(() => _fakeOutboxRepository.GetUnprocessedAsync(20))
             .Returns([message]);
 
-        A.CallTo(() => _fakePublisher.Publish(A<UserCreatedEvent>.That.Matches(ev => ev.UserId == userCreatedEvent.UserId), A<CancellationToken>.Ignored))
+        A.CallTo(() => _fakePublisher.Publish(A<UserDeletedEvent>.That.Matches(ev => ev.UserId == userCreatedEvent.UserId), A<CancellationToken>.Ignored))
             .Returns(ValueTask.CompletedTask);
 
         // Act
@@ -86,7 +86,7 @@ public class ProcessOutboxMessageJobTests
         {
             Id = Guid.NewGuid(),
             Type = "InvalidTypeName",
-            Content = JsonConvert.SerializeObject(new UserCreatedEvent(Guid.NewGuid()))
+            Content = JsonConvert.SerializeObject(new UserDeletedEvent(Guid.NewGuid()))
         };
 
         A.CallTo(() => _fakeOutboxRepository.GetUnprocessedAsync(20)).Returns([message]);

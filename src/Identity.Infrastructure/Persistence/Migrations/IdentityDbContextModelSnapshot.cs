@@ -20,7 +20,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Identity.Domain.Aggregates.SigningKey", b =>
@@ -156,6 +155,7 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("AccountPublicKey")
+                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("account_public_key");
@@ -167,10 +167,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("Deleted")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_verified");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone")
@@ -256,41 +252,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("device", (string)null);
                 });
 
-            modelBuilder.Entity("Identity.Domain.Entities.UserVerificationCode", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("CodeType")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("code_type");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created");
-
-                    b.Property<DateTime?>("Deleted")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("idx_user_id");
-
-                    b.ToTable("user_verification_code", (string)null);
-                });
-
             modelBuilder.Entity("Identity.Infrastructure.Persistence.Outbox.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -325,53 +286,6 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("outbox_message", (string)null);
                 });
 
-            modelBuilder.Entity("Identity.Domain.Aggregates.User", b =>
-                {
-                    b.OwnsOne("Identity.Domain.ValueObjects.Email", "Email", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Address")
-                                .HasMaxLength(255)
-                                .HasColumnType("citext")
-                                .HasColumnName("email");
-
-                            b1.HasKey("UserId");
-
-                            b1.HasIndex("Address")
-                                .IsUnique()
-                                .HasDatabaseName("idx_email");
-
-                            b1.ToTable("user");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
-
-                    b.OwnsOne("Identity.Domain.ValueObjects.Password", "Password", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("HashedPassword")
-                                .HasMaxLength(255)
-                                .HasColumnType("character varying(255)")
-                                .HasColumnName("password");
-
-                            b1.HasKey("UserId");
-
-                            b1.ToTable("user");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
-
-                    b.Navigation("Email");
-
-                    b.Navigation("Password");
-                });
-
             modelBuilder.Entity("Identity.Domain.Entities.Device", b =>
                 {
                     b.HasOne("Identity.Domain.Aggregates.User", null)
@@ -381,59 +295,9 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Identity.Domain.Entities.UserVerificationCode", b =>
-                {
-                    b.HasOne("Identity.Domain.Aggregates.User", null)
-                        .WithMany("VerificationCodes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("Identity.Domain.ValueObjects.VerificationCode", "Code", b1 =>
-                        {
-                            b1.Property<Guid>("UserVerificationCodeId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<DateTime>("ExpirationDate")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("expiration_date");
-
-                            b1.Property<int>("FailedAttempts")
-                                .HasColumnType("integer")
-                                .HasColumnName("failed_attempts");
-
-                            b1.Property<bool>("IsUsed")
-                                .HasColumnType("boolean")
-                                .HasColumnName("is_used");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("character varying(20)")
-                                .HasColumnName("code");
-
-                            b1.HasKey("UserVerificationCodeId");
-
-                            b1.HasIndex("ExpirationDate")
-                                .HasDatabaseName("idx_expiration_date");
-
-                            b1.HasIndex("Value");
-
-                            b1.ToTable("user_verification_code");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserVerificationCodeId");
-                        });
-
-                    b.Navigation("Code")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Identity.Domain.Aggregates.User", b =>
                 {
                     b.Navigation("Devices");
-
-                    b.Navigation("VerificationCodes");
                 });
 #pragma warning restore 612, 618
         }

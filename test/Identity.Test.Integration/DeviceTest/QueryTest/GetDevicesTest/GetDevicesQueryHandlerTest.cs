@@ -5,7 +5,6 @@ using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
-using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +29,7 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Query_Should_Return_Devices()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("testPw=??kkl89"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var device1 = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
@@ -60,7 +59,7 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Query_Should_Return_LastSeen_And_Exclude_Deleted_Devices()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("testPw=??kkl89"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var seenDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         seenDevice.SetLastSeen();
@@ -92,7 +91,7 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Invalid_Query_Should_Return_Error()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("testPw=??kkl89"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var device1 = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
@@ -121,7 +120,7 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Valid_Query_With_No_Devices_Should_Return_Empty_List()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test89?klsdKK"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var device = new Device(Guid.NewGuid(), "somekey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();

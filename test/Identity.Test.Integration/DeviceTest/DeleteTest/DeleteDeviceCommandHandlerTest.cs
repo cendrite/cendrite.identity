@@ -8,7 +8,6 @@ using Identity.Domain.Enums;
 using Identity.Domain.Events.Device;
 using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
-using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +35,7 @@ public class DeleteDeviceCommandHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Command_Should_Delete_Device_And_Raise_Logout_And_DeviceDeleted()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test98??KLadds"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         var device = new Device(Guid.NewGuid(), "testKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
@@ -64,7 +63,7 @@ public class DeleteDeviceCommandHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Already_Deleted_Device_Should_Return_NotFound()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test98??KLadds"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         var device = new Device(Guid.NewGuid(), "testKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();
         user.AddDevice(device);
