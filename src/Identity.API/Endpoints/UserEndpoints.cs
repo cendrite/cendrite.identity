@@ -1,5 +1,4 @@
 using Identity.API.Common;
-using Identity.Application.Features.Device.Commands.Create;
 using Identity.Application.Features.Device.Commands.Delete;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetDevices;
@@ -32,16 +31,6 @@ internal sealed class UserEndpoints : IEndpoint
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status404NotFound);
-
-        group.MapPost("/device", async ([FromBody] CreateDeviceCommand cmd, ISender sender) =>
-            {
-                var result = await sender.Send(cmd);
-                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
-            })
-            .Produces<CreateDeviceDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
