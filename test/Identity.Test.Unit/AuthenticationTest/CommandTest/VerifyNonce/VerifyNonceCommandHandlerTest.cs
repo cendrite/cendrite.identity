@@ -181,7 +181,7 @@ public class VerifyNonceCommandHandlerTest
 
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
-        A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(false);
+        A.CallTo(() => _fakeVerify.VerifyNonce(Labelled(nonce.NonceValue), cmd.Nonce, device.PublicKey)).Returns(false);
 
         // Act
         var result = await _sut.Handle(cmd, CancellationToken.None);
@@ -202,7 +202,7 @@ public class VerifyNonceCommandHandlerTest
 
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
-        A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
+        A.CallTo(() => _fakeVerify.VerifyNonce(Labelled(nonce.NonceValue), cmd.Nonce, device.PublicKey)).Returns(true);
         A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(false);
 
         // Act
@@ -228,7 +228,7 @@ public class VerifyNonceCommandHandlerTest
 
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
-        A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
+        A.CallTo(() => _fakeVerify.VerifyNonce(Labelled(nonce.NonceValue), cmd.Nonce, device.PublicKey)).Returns(true);
         A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(true);
         A.CallTo(() => _fakeJwt.GenerateTokenAsync(user.Id, device.Id, device.ConnectionId, A<CancellationToken>._)).Returns(accessToken);
 
@@ -261,7 +261,7 @@ public class VerifyNonceCommandHandlerTest
 
         A.CallTo(() => _fakeCachce.GetNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(nonce);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
-        A.CallTo(() => _fakeVerify.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey)).Returns(true);
+        A.CallTo(() => _fakeVerify.VerifyNonce(Labelled(nonce.NonceValue), cmd.Nonce, device.PublicKey)).Returns(true);
         A.CallTo(() => _fakeCachce.TryClaimNonceAsync(cmd.NonceId, A<CancellationToken>._)).Returns(true);
         A.CallTo(() => _fakeJwt.GenerateTokenAsync(user.Id, device.Id, device.ConnectionId, A<CancellationToken>._))
             .Returns(new AccessToken("jwt", DateTime.UtcNow.AddMinutes(15)));
@@ -290,4 +290,7 @@ public class VerifyNonceCommandHandlerTest
         // Assert
         A.CallTo(() => _fakeIssuer.IssueAsync(A<Guid>._, A<IReadOnlyList<string>>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
+
+    private static string Labelled(string nonce) =>
+        Convert.ToBase64String([.. System.Text.Encoding.ASCII.GetBytes("cendrite-auth-v1"), .. Convert.FromBase64String(nonce)]);
 }

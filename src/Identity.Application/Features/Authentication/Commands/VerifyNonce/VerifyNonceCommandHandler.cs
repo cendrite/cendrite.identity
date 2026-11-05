@@ -1,4 +1,5 @@
-﻿using Cendrite.Domain.Common;
+﻿using System.Text;
+using Cendrite.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
@@ -19,6 +20,8 @@ public class VerifyNonceCommandHandler(
     ILogger<VerifyNonceCommandHandler> logger)
     : ICommandHandler<VerifyNonceCommand, VerifyNonceDto>
 {
+    private static readonly byte[] AuthContext = Encoding.ASCII.GetBytes("cendrite-auth-v1");
+
     public async ValueTask<Result<VerifyNonceDto>> Handle(VerifyNonceCommand cmd, CancellationToken ct)
     {
         var nonce = await nonceCacheService.GetNonceAsync(cmd.NonceId, ct);
@@ -38,7 +41,8 @@ public class VerifyNonceCommandHandler(
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
         }
 
-        var isNonceValid = verifyNonceService.VerifyNonce(nonce.NonceValue, cmd.Nonce, device.PublicKey);
+        var message = Convert.ToBase64String([.. AuthContext, .. Convert.FromBase64String(nonce.NonceValue)]);
+        var isNonceValid = verifyNonceService.VerifyNonce(message, cmd.Nonce, device.PublicKey);
 
         if (!isNonceValid)
             return Result.Fail<VerifyNonceDto>(Errors.General.Unauthorized());
