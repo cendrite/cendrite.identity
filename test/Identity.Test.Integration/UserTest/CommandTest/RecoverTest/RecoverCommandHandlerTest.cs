@@ -12,6 +12,7 @@ using Identity.Domain.Common;
 using Identity.Domain.Constants;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
@@ -72,6 +73,7 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
         recovered.ApprovedBy.Should().Be(DeviceConstants.ApprovedByAccount);
         recovered.ApprovalSignature.Should().Be(cmd.DeviceApproval);
         Harness.Published.Select<CreateClientMessage>().Should().Contain(m => m.Context.Message.DeviceId == recovered.Id);
+        Db.OutboxMessage.Should().ContainSingle(m => m.Type.Contains(nameof(DeviceAddedEvent)));
     }
 
     [Fact]

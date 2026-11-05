@@ -9,6 +9,7 @@ using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Domain.Common;
 using Identity.Domain.Constants;
+using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -48,6 +49,8 @@ public sealed class RecoverCommandHandler(
         var createClientResult = await CreateClient(device.Id, device.ConnectionId, user.Id);
         if (createClientResult.Success is false)
             return Result.Fail<RecoverDto>(RecoveryFailed);
+
+        user.AddDomainEvent(new DeviceAddedEvent(user.Id, device.Id, device.ConnectionId, device.Platform));
 
         await unitOfWork.SaveChangesAsync(ct);
 
