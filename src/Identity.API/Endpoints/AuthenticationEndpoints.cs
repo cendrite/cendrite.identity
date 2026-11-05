@@ -1,7 +1,6 @@
 using Identity.API.Common;
 using Identity.Application.Features.Authentication.Commands.Login;
 using Identity.Application.Features.Authentication.Commands.Logout;
-using Identity.Application.Features.Authentication.Commands.VerifyLogin;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Authentication.Queries.GetNonce;
 using Identity.Application.Features.Authentication.Queries.GetSignupChallenge;
@@ -38,17 +37,6 @@ internal sealed class AuthenticationEndpoints : IEndpoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
-
-        group.MapPost("/verify-login", async ([FromBody] VerifyLoginCommand cmd, ISender sender) =>
-            {
-                var result = await sender.Send(cmd);
-                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
-            })
-            .Produces<VerifyLoginDto>()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapGet("/nonce", async ([AsParameters] GetNonceQuery query, ISender sender) =>
             {
