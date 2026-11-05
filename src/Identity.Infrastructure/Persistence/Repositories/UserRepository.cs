@@ -30,10 +30,6 @@ public class UserRepository(IdentityDbContext context) : IUserRepository
         return Task.CompletedTask;
     }
 
-    public async Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
-    {
-        return await context.User.FirstOrDefaultAsync(c => c.Email!.Address.Equals(email), ct);
-    }
 
     public Task<User?> GetByDeviceIdAsync(Guid deviceId, CancellationToken ct = default)
     {

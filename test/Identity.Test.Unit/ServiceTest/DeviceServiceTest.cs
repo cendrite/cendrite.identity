@@ -3,7 +3,6 @@ using FluentAssertions;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Enums;
 using Identity.Domain.Services.User;
-using Identity.Domain.ValueObjects;
 
 namespace Cendrite.Authentication.Test.Unit.ServiceTest;
 
@@ -15,7 +14,7 @@ public class DeviceServiceTest
     public void RegisterDevice_Should_Return_Device()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Testpass?932"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         // Act
         var result = _sut.RegisterDevice(user, "publicKey", "1.0.0", DeviceType.Mobile, DevicePlatform.iOS, null, null);

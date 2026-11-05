@@ -2,7 +2,6 @@
 using Identity.Application.Features.User.Consumers;
 using Cendrite.Message.Contracts.Abstractions;
 using Cendrite.Message.Contracts.Messages.Common;
-using Cendrite.Message.Contracts.Messages.Email;
 using Cendrite.Message.Contracts.Messages.User;
 using Identity.Infrastructure.Messaging;
 using Identity.Infrastructure.Settings;
@@ -30,7 +29,6 @@ public static class MassTransitExtensions
 
     private static void AddProducers(this IServiceCollection services)
     {
-        services.AddProducer<SendEmailMessage>();
         services.AddProducer<UserDeletedMessage>();
         services.AddProducer<OperationSucceededMessage>();
         services.AddProducer<UserLogoutMessage>();

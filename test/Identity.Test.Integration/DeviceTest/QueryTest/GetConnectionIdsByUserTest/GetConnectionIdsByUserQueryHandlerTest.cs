@@ -4,7 +4,6 @@ using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
-using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +42,7 @@ public class GetConnectionIdsByUserQueryHandlerTest : IntegrationTestBase
     public async Task Handle_When_User_Has_No_Devices_Should_Return_Empty_List()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test23923???kKK"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         await Db.User.AddAsync(user);
         await Db.SaveChangesAsync();
 
@@ -64,7 +63,7 @@ public class GetConnectionIdsByUserQueryHandlerTest : IntegrationTestBase
     public async Task Handle_When_User_Has_Devices_Should_Return_ConnectionIds()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test23923???kKK"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         var device = new Device(Guid.NewGuid(), "somekey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         var device2 = new Device(Guid.NewGuid(), "somekey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
 

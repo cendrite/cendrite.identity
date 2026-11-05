@@ -6,7 +6,6 @@ using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Services.User;
-using Identity.Domain.ValueObjects;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +32,7 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Command_Should_Logout_User_And_Delete_Device()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("Test98??KLadds"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var device = new Device(Guid.NewGuid(), "testKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 

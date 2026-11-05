@@ -7,7 +7,6 @@ using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.User.Consumers;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Services.User;
-using Identity.Domain.ValueObjects;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -35,7 +34,7 @@ public class RollbackUserDeleteConsumerTest
     public async Task Consume_Valid_Message_Should_Revert_Soft_Delete()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test123KLJJSD?"), false);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         user.SetDelete();
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);

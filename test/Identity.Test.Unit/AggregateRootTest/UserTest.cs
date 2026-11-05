@@ -1,159 +1,57 @@
 ﻿using FluentAssertions;
 using Identity.Domain.Aggregates;
+using Identity.Domain.Entities;
 using Identity.Domain.Enums;
-using Identity.Domain.ValueObjects;
 
 namespace Identity.Test.Unit.AggregateRootTest;
 
 public class UserTest
 {
     [Fact]
-    public void AddVerificationCode_Should_Add_New_VerificationCode()
+    public void Constructor_Should_Set_AccountPublicKey()
     {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-
         // Act
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
+        var user = new User(Guid.NewGuid(), "account-key");
 
         // Assert
-        user.VerificationCodes.Should().HaveCount(1);
+        user.AccountPublicKey.Should().Be("account-key");
+        user.Devices.Should().BeEmpty();
     }
 
     [Fact]
-    public void AddVerificationCode_Should_Mark_Existing_Codes_Of_Same_Type_As_Used()
+    public void GetDevices_Should_Exclude_Deleted_Devices_By_Default()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
+        var user = new User(Guid.NewGuid(), "account-key");
+        var active = new Device(Guid.NewGuid(), "key-1", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var deleted = new Device(Guid.NewGuid(), "key-2", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        deleted.SetDelete();
+        user.AddDevice(active);
+        user.AddDevice(deleted);
 
         // Act
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
+        var activeDevices = user.GetDevices();
+        var allDevices = user.GetDevices(excludeDeleted: false);
 
         // Assert
-        user.VerificationCodes.Should().HaveCount(2);
-        user.VerificationCodes.Should().ContainSingle(vc => vc.Code.IsUsed);
+        activeDevices.Should().ContainSingle().Which.Should().Be(active);
+        allDevices.Should().HaveCount(2);
     }
 
     [Fact]
-    public void GetVerificationCode_Should_Return_Newest_Unused_VerificationCode()
+    public void GetDevice_Should_Throw_For_Deleted_Device_Unless_Included()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
-        var assertCode = user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
+        var user = new User(Guid.NewGuid(), "account-key");
+        var device = new Device(Guid.NewGuid(), "key-1", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        device.SetDelete();
+        user.AddDevice(device);
 
         // Act
-        var code = user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification);
+        var act = () => user.GetDevice(device.Id);
 
         // Assert
-        code.Should().NotBeNull();
-        code.Code.Should().NotBe(assertCode.Code);
-    }
-
-    [Fact]
-    public void GetVerificationCode_Should_Return_Null_When_No_Codes_Present()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-
-        // Act
-        var code = user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification);
-
-        // Assert
-        code.Should().BeNull();
-    }
-
-    [Fact]
-    public void Verify_Should_Throw_InvalidOperationException_When_No_VerificationCodes()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-
-        // Act
-        Action act = () => user.VerifyAccount("1234");
-
-        // Assert
-        act.Should().Throw<InvalidOperationException>().WithMessage("This chat user does not have a verification code");
-    }
-
-    [Fact]
-    public void Verify_Should_Throw_InvalidOperationException_When_User_Is_Already_Verified()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), true);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
-
-        // Act
-        Action act = () => user.VerifyAccount("1234");
-
-        // Assert
-        act.Should().Throw<InvalidOperationException>().WithMessage("This chat user is already verified");
-    }
-
-    [Fact]
-    public void Verify_Should_Return_Fail_Result_When_Invalid_VerificationCode()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
-
-        // Act
-        var result = user.VerifyAccount("1234");
-
-        // Assert
-        result.Success.Should().BeFalse();
-        result.Error.Description.Should().Be("Invalid verification code");
-    }
-
-    [Fact]
-    public void Verify_Should_Count_Failed_Attempt_On_Active_EmailVerification_Code()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
-
-        // Act
-        user.VerifyAccount("wrong");
-
-        // Assert
-        user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification)!.Code.FailedAttempts.Should().Be(1);
-        user.IsVerified.Should().BeFalse();
-    }
-
-    [Fact]
-    public void Verify_Should_Not_Accept_Login_Code()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("kjFis97823??sd"), false);
-        user.AddVerificationCode(UserVerificationCodeType.Login);
-        var loginCode = user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.Value;
-
-        // Act
-        var result = user.VerifyAccount(loginCode);
-
-        // Assert
-        result.Success.Should().BeFalse();
-        user.IsVerified.Should().BeFalse();
-        user.GetActiveVerificationCode(UserVerificationCodeType.Login)!.Code.IsUsed.Should().BeFalse();
-    }
-
-    [Fact]
-    public void Verify_Should_Return_Success_Result_When_Valid_VerificationCode()
-    {
-        // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("asdoiasd212?K"), false);
-        user.AddVerificationCode(UserVerificationCodeType.EmailVerification);
-        var code = user.GetActiveVerificationCode(UserVerificationCodeType.EmailVerification);
-
-        // Act
-        var result = user.VerifyAccount(code!.Code.Value);
-
-        // Assert
-        result.Success.Should().BeTrue();
-        user.IsVerified.Should().BeTrue();
-        user.VerificationCodes.Should().ContainSingle(vc => vc.Code.IsUsed);
-        user.DomainEvents.Should().HaveCount(1);
+        act.Should().Throw<InvalidOperationException>();
+        user.GetDevice(device.Id, includeDeleted: true).Should().Be(device);
     }
 }

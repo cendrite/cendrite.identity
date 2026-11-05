@@ -5,7 +5,6 @@ using Identity.Application.Features.Authentication.Commands.Logout;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Services.User;
-using Identity.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Test.Unit.AuthenticationTest.CommandTest.Logout;
@@ -46,7 +45,7 @@ public class LogoutCommandHandlerTest
     public async Task Handle_When_Valid_Command_Should_Return_Result_Ok()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Email.Create("test@mail.dk"), Password.Create("test@Password?923"), true);
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         var command = new LogoutCommand { Id = user.Id, DeviceId = Guid.NewGuid() };
 

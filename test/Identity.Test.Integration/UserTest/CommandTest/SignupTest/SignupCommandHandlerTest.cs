@@ -68,9 +68,6 @@ public class SignupCommandHandlerTest : IntegrationTestBase
         var user = Db.User.Single();
         user.Id.Should().Be(result.Value!.UserId);
         user.AccountPublicKey.Should().Be(account.PublicKey);
-        user.Email.Should().BeNull();
-        user.Password.Should().BeNull();
-        user.IsVerified.Should().BeTrue();
 
         var stored = Db.Device.Single();
         stored.Id.Should().Be(result.Value.DeviceId);
