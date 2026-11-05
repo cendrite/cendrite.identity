@@ -1,6 +1,6 @@
 ﻿using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Repository;
-using Identity.Application.Features.User.Commands.Create;
+using Identity.Application.Features.User.Commands.Signup;
 using Identity.Test.Architecture.Helpers;
 using NetArchTest.Rules;
 
@@ -11,7 +11,7 @@ public class ApplicationTest
     [Fact]
     public void Application_Should_Not_Reference_Infrastructure()
     {
-        var result = Types.InAssembly(typeof(CreateUserCommandHandler).Assembly)
+        var result = Types.InAssembly(typeof(SignupCommandHandler).Assembly)
             .That()
             .ResideInNamespace("Cendrite.ChatUser.Application")
             .ShouldNot()
@@ -24,7 +24,7 @@ public class ApplicationTest
     [Fact]
     public void Application_Should_Not_Reference_Presentation()
     {
-        var result = Types.InAssembly(typeof(CreateUserCommandHandler).Assembly)
+        var result = Types.InAssembly(typeof(SignupCommandHandler).Assembly)
             .That()
             .ResideInNamespace("Cendrite.ChatUser.Application")
             .ShouldNot()
@@ -63,7 +63,7 @@ public class ApplicationTest
     [Fact]
     public void All_Commands_Should_Implement_ICommand()
     {
-        var result = Types.InAssembly(typeof(CreateUserCommand).Assembly)
+        var result = Types.InAssembly(typeof(SignupCommand).Assembly)
             .That()
             .HaveNameEndingWith("Command")
             .And().DoNotHaveName("ICommand")
@@ -79,7 +79,7 @@ public class ApplicationTest
     [Fact]
     public void All_Queries_Should_Implement_IQuery()
     {
-        var result = Types.InAssembly(typeof(CreateUserCommand).Assembly)
+        var result = Types.InAssembly(typeof(SignupCommand).Assembly)
             .That()
             .HaveNameEndingWith("Query")
             .Should()
@@ -92,7 +92,7 @@ public class ApplicationTest
     [Fact]
     public void All_CommandHandlers_Should_Implement_ICommandHandler()
     {
-        var result = Types.InAssembly(typeof(CreateUserCommand).Assembly)
+        var result = Types.InAssembly(typeof(SignupCommand).Assembly)
             .That()
             .HaveNameEndingWith("CommandHandler")
             .Should()

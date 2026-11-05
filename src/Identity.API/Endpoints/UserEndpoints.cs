@@ -3,7 +3,6 @@ using Identity.Application.Features.Device.Commands.Create;
 using Identity.Application.Features.Device.Commands.Delete;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetDevices;
-using Identity.Application.Features.User.Commands.Create;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Application.Features.User.Commands.Signup;
 using Mediator;
@@ -17,14 +16,6 @@ internal sealed class UserEndpoints : IEndpoint
     {
         var group = routeBuilder.MapGroup("api/user")
             .WithTags("User");
-
-        group.MapPost("/", async ([FromBody] CreateUserCommand cmd, ISender sender) =>
-            {
-                var result = await sender.Send(cmd);
-                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
-            })
-            .Produces<CreateUserDto>()
-            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPost("/signup", async ([FromBody] SignupCommand cmd, ISender sender) =>
             {
