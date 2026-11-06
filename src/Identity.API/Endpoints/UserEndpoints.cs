@@ -4,6 +4,7 @@ using Identity.Application.Features.Device.Commands.ApproveLink;
 using Identity.Application.Features.Device.Commands.CreateLinkCode;
 using Identity.Application.Features.Device.Commands.RedeemLinkCode;
 using Identity.Application.Features.Device.Commands.RejectLink;
+using Identity.Application.Features.Device.Commands.Rename;
 using Identity.Application.Features.Device.Queries.GetLinkStatus;
 using Identity.Application.Features.Device.Queries.GetPendingLink;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
@@ -64,6 +65,17 @@ internal sealed class UserEndpoints : IEndpoint
         group.MapDelete("/device/{targetDeviceId}", async (Guid targetDeviceId, ISender sender, HttpContext ctx) =>
             {
                 var result = await sender.Send(new DeleteDeviceCommand { TargetDeviceId = targetDeviceId, UserId = ctx.User.GetUserId() });
+                return result.Success ? Results.Ok() : result.ToProblemDetails();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPut("/device/{targetDeviceId:guid}/name", async (Guid targetDeviceId, [FromBody] RenameDeviceRequest body, ISender sender, HttpContext ctx) =>
+            {
+                var result = await sender.Send(new RenameDeviceCommand { UserId = ctx.User.GetUserId(), TargetDeviceId = targetDeviceId, Name = body.Name });
                 return result.Success ? Results.Ok() : result.ToProblemDetails();
             })
             .RequireAuthorization()
