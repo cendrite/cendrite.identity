@@ -2,13 +2,6 @@ using Identity.Domain.Enums;
 
 namespace Identity.Application.Caching.DeviceLink;
 
-public enum PendingLinkStatus
-{
-    Pending = 0,
-    Approved = 1,
-    Rejected = 2,
-}
-
 public sealed record PendingLink(
     Guid Id,
     Guid UserId,
@@ -24,4 +17,7 @@ public sealed record PendingLink(
     Guid? DeviceConnectionId = null)
 {
     public bool Expired => DateTime.UtcNow > ExpiresAt;
+
+    public bool IsOpenFor(Guid userId, Guid deviceId) =>
+        !Expired && Status == PendingLinkStatus.Pending && UserId == userId && IssuingDeviceId == deviceId;
 }
