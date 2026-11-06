@@ -40,6 +40,7 @@ internal static class CachingExtensions
         services.AddScoped<INonceCacheService, NonceCacheService>();
         services.AddScoped<ISignupChallengeCache, SignupChallengeCache>();
         services.AddScoped<IRecoveryChallengeCache, RecoveryChallengeCache>();
+        services.AddScoped<IDeviceLinkCache, DeviceLinkCache>();
         services.AddSingleton<IRateLimiter, RedisSlidingWindowRateLimiter>();
     }
 }
