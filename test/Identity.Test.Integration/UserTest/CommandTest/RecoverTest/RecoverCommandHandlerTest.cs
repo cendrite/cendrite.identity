@@ -16,12 +16,10 @@ using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
+using Identity.Test.Integration.Setup.Helpers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto.Signers;
-using Org.BouncyCastle.Security;
 
 namespace Identity.Test.Integration.UserTest.CommandTest.RecoverTest;
 
@@ -217,28 +215,10 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
             ChallengeId = challenge.Value.ChallengeId,
             ChallengeSignature = account.Sign([.. Encoding.ASCII.GetBytes("cendrite-recovery-v1"), .. challengeBytes]),
             DevicePublicKey = device.PublicKey,
-            DeviceApproval = account.Sign([
-                .. Encoding.ASCII.GetBytes("device-approval-v1"),
-                .. Convert.FromBase64String(account.PublicKey),
-                .. Convert.FromBase64String(device.PublicKey)]),
+            DeviceApproval = account.SignDeviceApproval(account.PublicKey, device.PublicKey),
             DeviceAppVersion = "1.0",
             DeviceType = DeviceType.Desktop,
             DevicePlatform = DevicePlatform.Linux,
         };
-    }
-
-    private sealed class KeyPair
-    {
-        private readonly Ed25519PrivateKeyParameters _private = new(new SecureRandom());
-
-        public string PublicKey => Convert.ToBase64String(_private.GeneratePublicKey().GetEncoded());
-
-        public string Sign(byte[] message)
-        {
-            var signer = new Ed25519Signer();
-            signer.Init(true, _private);
-            signer.BlockUpdate(message, 0, message.Length);
-            return Convert.ToBase64String(signer.GenerateSignature());
-        }
     }
 }
