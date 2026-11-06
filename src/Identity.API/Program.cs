@@ -1,5 +1,6 @@
 using System.Reflection;
 using Identity.API.Extensions;
+using Identity.Domain.Constants;
 using Identity.Domain.Extensions;
 using Identity.Infrastructure.Extensions;
 using Scalar.AspNetCore;
@@ -27,7 +28,11 @@ builder.Services.AddObservability();
 builder.Services.AddDomain();
 
 builder.Services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
-builder.Services.Configure<SignupChallengeSettings>(configuration.GetSection("SignupChallenge"));
+builder.Services.AddOptions<SignupChallengeSettings>()
+    .Bind(configuration.GetSection("SignupChallenge"))
+    .Validate(s => s.Difficulty is >= 0 and <= SignupChallengeConstants.MaxDifficulty,
+        $"SignupChallenge:Difficulty must be between 0 and {SignupChallengeConstants.MaxDifficulty}")
+    .ValidateOnStart();
 builder.Services.AddApplication(Assembly.Load("Identity.Application"));
 
 builder.Services.AddInfrastructure(configuration, Assembly.Load("Identity.Infrastructure"));
