@@ -2,10 +2,9 @@ using Cendrite.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
-using Identity.Application.Features.Device.Commands.Link;
 using Identity.Domain.Common;
 
-namespace Identity.Application.Features.Device.Queries.Link;
+namespace Identity.Application.Features.Device.Queries.GetPendingLink;
 
 public sealed class GetPendingLinkQueryHandler(
     IUserRepository userRepository,
@@ -14,8 +13,8 @@ public sealed class GetPendingLinkQueryHandler(
 {
     public async ValueTask<Result<PendingLinkDto>> Handle(GetPendingLinkQuery q, CancellationToken ct)
     {
-        var pending = await PendingLinkAccess.GetOpenForIssuer(deviceLinkCache, q.PendingLinkId, q.UserId, q.DeviceId, ct);
-        if (pending is null)
+        var pending = await deviceLinkCache.GetPendingAsync(q.PendingLinkId, ct);
+        if (pending is null || !pending.IsOpenFor(q.UserId, q.DeviceId))
             return Result.Fail<PendingLinkDto>(Errors.General.NotFound(q.PendingLinkId));
 
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(q.UserId, excludeDeleted: true), ct);

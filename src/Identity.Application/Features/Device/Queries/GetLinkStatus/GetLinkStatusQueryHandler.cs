@@ -7,7 +7,7 @@ using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.RateLimiting;
 using Identity.Domain.Common;
 
-namespace Identity.Application.Features.Device.Queries.Link;
+namespace Identity.Application.Features.Device.Queries.GetLinkStatus;
 
 public sealed class GetLinkStatusQueryHandler(
     IDeviceLinkCache deviceLinkCache,
