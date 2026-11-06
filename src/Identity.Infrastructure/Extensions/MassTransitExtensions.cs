@@ -35,6 +35,7 @@ public static class MassTransitExtensions
         services.AddProducer<UserLoginMessage>();
         services.AddProducer<DeviceDeletedMessage>();
         services.AddProducer<DeviceAddedMessage>();
+        services.AddProducer<DeviceLinkRequestedMessage>();
     }
 
     /// <summary>
