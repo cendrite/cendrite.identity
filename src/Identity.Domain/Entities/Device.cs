@@ -6,7 +6,7 @@ namespace Identity.Domain.Entities;
 
 public class Device : Entity
 {
-    public string Name { get; private init; } = null!;
+    public string Name { get; private set; } = null!;
     public string PublicKey { get; init; } = null!;
     public Guid ConnectionId { get; init; }
     public DateTime? LastSeen { get; private set; }
@@ -57,6 +57,14 @@ public class Device : Entity
             DevicePlatform.Unknown => "Device.Unknown",
             _ => throw new ArgumentOutOfRangeException(nameof(platform), platform, null),
         };
+    }
+
+    /// <summary>
+    /// Renames the device.
+    /// </summary>
+    public void Rename(string name)
+    {
+        Name = name.Trim();
     }
 
     /// <summary>
