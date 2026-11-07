@@ -181,6 +181,64 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("user", (string)null);
                 });
 
+            modelBuilder.Entity("Identity.Domain.Entities.AccountKeyRotation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Approval")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("approval");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created");
+
+                    b.Property<DateTime?>("Deleted")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("device_id");
+
+                    b.Property<string>("NewAccountPublicKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("new_account_public_key");
+
+                    b.Property<string>("OldAccountPublicKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("old_account_public_key");
+
+                    b.Property<string>("Proof")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("proof");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("idx_account_key_rotation_user_id");
+
+                    b.ToTable("account_key_rotation", (string)null);
+                });
+
             modelBuilder.Entity("Identity.Domain.Entities.Device", b =>
                 {
                     b.Property<Guid>("Id")
@@ -286,6 +344,15 @@ namespace Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("outbox_message", (string)null);
                 });
 
+            modelBuilder.Entity("Identity.Domain.Entities.AccountKeyRotation", b =>
+                {
+                    b.HasOne("Identity.Domain.Aggregates.User", null)
+                        .WithMany("AccountKeyRotations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Identity.Domain.Entities.Device", b =>
                 {
                     b.HasOne("Identity.Domain.Aggregates.User", null)
@@ -297,6 +364,8 @@ namespace Identity.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Identity.Domain.Aggregates.User", b =>
                 {
+                    b.Navigation("AccountKeyRotations");
+
                     b.Navigation("Devices");
                 });
 #pragma warning restore 612, 618
