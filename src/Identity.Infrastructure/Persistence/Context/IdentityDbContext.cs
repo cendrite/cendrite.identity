@@ -9,6 +9,7 @@ public class IdentityDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<User> User { get; init; }
     public DbSet<Device> Device { get; init; }
+    public DbSet<AccountKeyRotation> AccountKeyRotation { get; init; }
     public DbSet<OutboxMessage> OutboxMessage { get; init; }
     public DbSet<SigningKey> SigningKey { get; init; }
     public DbSet<TokenIssuerKey> TokenIssuerKey { get; init; }

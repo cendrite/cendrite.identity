@@ -29,6 +29,11 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(u => u.AccountKeyRotations)
+            .WithOne()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         base.Configure(builder);
     }
 }
