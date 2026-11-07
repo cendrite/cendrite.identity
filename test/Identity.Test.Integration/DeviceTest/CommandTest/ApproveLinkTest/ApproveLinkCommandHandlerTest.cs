@@ -1,10 +1,10 @@
-using Cendrite.Message.Contracts.Messages.Client;
 using FluentAssertions;
 using Identity.Application.Caching.DeviceLink;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.Device.Commands.ApproveLink;
+using Identity.Application.Interfaces;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
@@ -13,7 +13,6 @@ using Identity.Domain.Services.User;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Identity.Test.Integration.Setup.Helpers;
-using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -34,7 +33,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
             sp.GetRequiredService<IVerifyNonceService>(),
             sp.GetRequiredService<IDeviceService>(),
             sp.GetRequiredService<IUnitOfWork>(),
-            sp.GetRequiredService<IRequestClient<CreateClientMessage>>(),
+            sp.GetRequiredService<IChatClientService>(),
             sp.GetRequiredService<ILogger<ApproveLinkCommandHandler>>());
     }
 

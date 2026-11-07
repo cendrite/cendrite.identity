@@ -1,8 +1,5 @@
-using System.Text;
 using Cendrite.Domain.Common;
-using Cendrite.Message.Contracts.Messages.Client;
 using Cendrite.Message.Contracts.Messages.Profile;
-using Cendrite.Message.Contracts.Responses.Client;
 using Cendrite.Message.Contracts.Responses.Profile;
 using Identity.Application.Abstractions;
 using Identity.Application.Caching.SignupChallenge;
@@ -10,6 +7,7 @@ using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Interfaces;
+using Identity.Application.Services;
 using Identity.Domain.Common;
 using Identity.Domain.Constants;
 using Identity.Domain.Services.User;
@@ -26,12 +24,10 @@ public sealed class SignupCommandHandler(
     IDeviceService deviceService,
     IUnitOfWork unitOfWork,
     IRequestClient<CreateUserProfileMessage> profileClient,
-    IRequestClient<CreateClientMessage> clientClient,
+    IChatClientService chatClientService,
     ILogger<SignupCommandHandler> logger)
     : ICommandHandler<SignupCommand, SignupDto>
 {
-    private static readonly byte[] SignupContext = Encoding.ASCII.GetBytes("cendrite-signup-v1");
-    private static readonly byte[] DeviceApprovalContext = Encoding.ASCII.GetBytes("device-approval-v1");
     private static readonly Error SignupFailed = Errors.General.UnspecifiedError("Signup failed");
 
     public async ValueTask<Result<SignupDto>> Handle(SignupCommand cmd, CancellationToken ct)
@@ -53,7 +49,7 @@ public sealed class SignupCommandHandler(
         if (createProfileResult.Success is false)
             return Result.Fail<SignupDto>(createProfileResult.Error);
 
-        var createClientResult = await CreateClient(device.Id, device.ConnectionId, user.Id);
+        var createClientResult = await chatClientService.CreateClientAsync(user.Id, device.Id, device.ConnectionId, ct);
         if (createClientResult.Success is false)
             return Result.Fail<SignupDto>(SignupFailed);
 
@@ -92,12 +88,8 @@ public sealed class SignupCommandHandler(
 
     private bool AreSignaturesValid(SignupChallenge challenge, SignupCommand cmd)
     {
-        var challengeBytes = Convert.FromBase64String(challenge.ChallengeValue);
-        var accountKey = Convert.FromBase64String(cmd.AccountPublicKey);
-        var deviceKey = Convert.FromBase64String(cmd.DevicePublicKey);
-
-        var valid = signatureVerifier.VerifyNonce(Concat(SignupContext, challengeBytes), cmd.ChallengeSignature, cmd.AccountPublicKey)
-                    && signatureVerifier.VerifyNonce(Concat(DeviceApprovalContext, accountKey, deviceKey), cmd.DeviceApproval, cmd.AccountPublicKey);
+        var valid = signatureVerifier.VerifyNonce(SignedMessages.SignupChallenge(challenge.ChallengeValue), cmd.ChallengeSignature, cmd.AccountPublicKey)
+                    && signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(cmd.AccountPublicKey, cmd.DevicePublicKey), cmd.DeviceApproval, cmd.AccountPublicKey);
         if (!valid)
             logger.LogWarning("Signup challenge {ChallengeId} has an invalid signature", challenge.Id);
 
@@ -111,11 +103,6 @@ public sealed class SignupCommandHandler(
             logger.LogWarning("Signup challenge {ChallengeId} used an account key that already exists", cmd.ChallengeId);
 
         return exists;
-    }
-
-    private static string Concat(params byte[][] parts)
-    {
-        return Convert.ToBase64String(parts.SelectMany(p => p).ToArray());
     }
 
     private async ValueTask<Result> CreateProfile(Guid userId, string username)
@@ -132,22 +119,5 @@ public sealed class SignupCommandHandler(
 
         logger.LogError("Failed to create user profile");
         return Result.Fail(Errors.General.UnspecifiedError(response.Message.Error!));
-    }
-
-    private async ValueTask<Result> CreateClient(Guid deviceId, Guid connectionId, Guid userId)
-    {
-        var response = await clientClient.GetResponse<CreateClientResponse>(new CreateClientMessage
-        {
-            CorrelationId = Guid.NewGuid(),
-            DeviceId = deviceId,
-            ConnectionId = connectionId,
-            UserId = userId
-        });
-
-        if (response.Message.IsSuccess)
-            return Result.Ok();
-
-        logger.LogError("Got a fail response from the Chat server attempting to create a Client for Device with ID {DeviceId}", deviceId);
-        return Result.Fail(Errors.General.UnspecifiedError("Failed to create client"));
     }
 }
