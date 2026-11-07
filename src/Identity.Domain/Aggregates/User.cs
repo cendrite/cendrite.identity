@@ -7,8 +7,9 @@ public class User : AggregateRoot
 {
     public string AccountPublicKey { get; private set; } = null!;
     private readonly List<Device> _devices = [];
-    public IReadOnlyCollection<Device> Devices => _devices;
     private readonly List<AccountKeyRotation> _accountKeyRotations = [];
+
+    public IReadOnlyCollection<Device> Devices => _devices;
     public IReadOnlyCollection<AccountKeyRotation> AccountKeyRotations => _accountKeyRotations;
 
     public User() : base(Guid.Empty) { } // For EF Core
@@ -27,6 +28,13 @@ public class User : AggregateRoot
         _devices.Add(device);
     }
 
+    /// <summary>
+    /// Rotate the account key for the user.
+    /// </summary>
+    /// <param name="deviceId">The ID of the device that is requesting the rotation</param>
+    /// <param name="newAccountPublicKey">The new account public key</param>
+    /// <param name="proof">The proof of the new account public key</param>
+    /// <param name="approval">The approval of the new account public key</param>
     public AccountKeyRotation RotateAccountKey(Guid deviceId, string newAccountPublicKey, string proof, string approval)
     {
         var device = GetDevice(deviceId);
