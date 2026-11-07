@@ -11,6 +11,7 @@ using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
 using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Application.Features.User.Commands.Recover;
+using Identity.Application.Features.User.Commands.RotateAccountKey;
 using Identity.Application.Features.User.Commands.Signup;
 using Identity.Application.Features.User.Queries.GetAccountKey;
 using Mediator;
@@ -62,6 +63,24 @@ internal sealed class UserEndpoints : IEndpoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapPut("/account-key", async ([FromBody] RotateAccountKeyRequest body, ISender sender, HttpContext ctx) =>
+            {
+                var result = await sender.Send(new RotateAccountKeyCommand
+                {
+                    UserId = ctx.User.GetUserId(),
+                    DeviceId = ctx.User.GetDeviceId(),
+                    NewAccountPublicKey = body.NewAccountPublicKey,
+                    Proof = body.Proof,
+                    Approval = body.Approval,
+                });
+                return result.Success ? Results.Ok() : result.ToProblemDetails();
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         group.MapGet("/devices", async (ISender sender, HttpContext ctx) =>
             {
