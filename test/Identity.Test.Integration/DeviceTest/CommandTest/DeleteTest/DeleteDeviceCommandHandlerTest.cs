@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Identity.Test.Integration.DeviceTest.DeleteTest;
+namespace Identity.Test.Integration.DeviceTest.CommandTest.DeleteTest;
 
 public class DeleteDeviceCommandHandlerTest : IntegrationTestBase
 {
