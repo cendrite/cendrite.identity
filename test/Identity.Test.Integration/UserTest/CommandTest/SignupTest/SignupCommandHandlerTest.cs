@@ -46,7 +46,7 @@ public class SignupCommandHandlerTest : IntegrationTestBase
             sp.GetRequiredService<IDeviceService>(),
             sp.GetRequiredService<IUnitOfWork>(),
             sp.GetRequiredService<IRequestClient<CreateUserProfileMessage>>(),
-            sp.GetRequiredService<IRequestClient<CreateClientMessage>>(),
+            sp.GetRequiredService<IChatClientService>(),
             sp.GetRequiredService<ILogger<SignupCommandHandler>>());
     }
 

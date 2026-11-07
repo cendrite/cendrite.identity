@@ -1,7 +1,6 @@
 using System.Text;
-using Cendrite.Message.Contracts.Messages.Client;
+using Cendrite.Domain.Common;
 using Cendrite.Message.Contracts.Messages.Profile;
-using Cendrite.Message.Contracts.Responses.Client;
 using Cendrite.Message.Contracts.Responses.Profile;
 using FakeItEasy;
 using FluentAssertions;
@@ -35,7 +34,7 @@ public class SignupCommandHandlerTest
     private readonly IDeviceService _fakeDeviceService = A.Fake<IDeviceService>();
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
     private readonly IRequestClient<CreateUserProfileMessage> _fakeProfileClient = A.Fake<IRequestClient<CreateUserProfileMessage>>();
-    private readonly IRequestClient<CreateClientMessage> _fakeClientClient = A.Fake<IRequestClient<CreateClientMessage>>();
+    private readonly IChatClientService _fakeClientClient = A.Fake<IChatClientService>();
     private readonly SignupCommandHandler _sut;
 
     private readonly SignupChallenge _challenge = SignupChallenge.Create(20, TimeSpan.FromMinutes(5));
@@ -79,13 +78,9 @@ public class SignupCommandHandlerTest
             .Returns(response);
     }
 
-    private void RespondFromChatServer(bool isSuccess)
-    {
-        var response = A.Fake<Response<CreateClientResponse>>();
-        A.CallTo(() => response.Message).Returns(new CreateClientResponse { CorrelationId = Guid.NewGuid(), IsSuccess = isSuccess });
-        A.CallTo(() => _fakeClientClient.GetResponse<CreateClientResponse>(A<CreateClientMessage>._, A<CancellationToken>._, A<RequestTimeout>._))
-            .Returns(response);
-    }
+    private void RespondFromChatServer(bool isSuccess) =>
+        A.CallTo(() => _fakeClientClient.CreateClientAsync(A<Guid>._, A<Guid>._, A<Guid>._, A<CancellationToken>._))
+            .Returns(isSuccess ? Result.Ok() : Result.Fail(Errors.General.UnspecifiedError("Failed to create client")));
 
     private void AssertNothingCreated()
     {
@@ -195,7 +190,7 @@ public class SignupCommandHandlerTest
 
         // Assert
         result.Error.Should().BeEquivalentTo(Errors.General.UnspecifiedError("Username taken"));
-        A.CallTo(() => _fakeClientClient.GetResponse<CreateClientResponse>(A<CreateClientMessage>._, A<CancellationToken>._, A<RequestTimeout>._))
+        A.CallTo(() => _fakeClientClient.CreateClientAsync(A<Guid>._, A<Guid>._, A<Guid>._, A<CancellationToken>._))
             .MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
     }

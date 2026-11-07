@@ -1,12 +1,12 @@
 using System.Text;
-using Cendrite.Message.Contracts.Messages.Client;
-using Cendrite.Message.Contracts.Responses.Client;
+using Cendrite.Domain.Common;
 using FakeItEasy;
 using FluentAssertions;
 using Identity.Application.Caching.DeviceLink;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
+using Identity.Application.Interfaces;
 using Identity.Application.Features.Device.Commands.ApproveLink;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
@@ -14,7 +14,6 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Test.Unit.DeviceTest.CommandTest.ApproveLinkTest;
@@ -29,7 +28,7 @@ public class ApproveLinkCommandHandlerTest
     private readonly IVerifyNonceService _fakeVerifier = A.Fake<IVerifyNonceService>();
     private readonly IDeviceService _fakeDeviceService = A.Fake<IDeviceService>();
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
-    private readonly IRequestClient<CreateClientMessage> _fakeClient = A.Fake<IRequestClient<CreateClientMessage>>();
+    private readonly IChatClientService _fakeClient = A.Fake<IChatClientService>();
     private readonly ApproveLinkCommandHandler _sut;
 
     private readonly User _user = new(Guid.NewGuid(), AccountKey);
@@ -64,13 +63,9 @@ public class ApproveLinkCommandHandlerTest
         Approval = "approval",
     };
 
-    private void RespondFromChatServer(bool isSuccess)
-    {
-        var response = A.Fake<Response<CreateClientResponse>>();
-        A.CallTo(() => response.Message).Returns(new CreateClientResponse { CorrelationId = Guid.NewGuid(), IsSuccess = isSuccess });
-        A.CallTo(() => _fakeClient.GetResponse<CreateClientResponse>(A<CreateClientMessage>._, A<CancellationToken>._, A<RequestTimeout>._))
-            .Returns(response);
-    }
+    private void RespondFromChatServer(bool isSuccess) =>
+        A.CallTo(() => _fakeClient.CreateClientAsync(A<Guid>._, A<Guid>._, A<Guid>._, A<CancellationToken>._))
+            .Returns(isSuccess ? Result.Ok() : Result.Fail(Errors.General.UnspecifiedError("Failed to create client")));
 
     private void AssertNothingCreated()
     {

@@ -1,17 +1,15 @@
-using System.Text;
 using Cendrite.Domain.Common;
-using Cendrite.Message.Contracts.Messages.Client;
-using Cendrite.Message.Contracts.Responses.Client;
 using Identity.Application.Abstractions;
 using Identity.Application.Caching.RecoveryChallenge;
 using Identity.Application.Contracts.Cache;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
+using Identity.Application.Interfaces;
+using Identity.Application.Services;
 using Identity.Domain.Common;
 using Identity.Domain.Constants;
 using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.User.Commands.Recover;
@@ -22,12 +20,10 @@ public sealed class RecoverCommandHandler(
     IVerifyNonceService signatureVerifier,
     IDeviceService deviceService,
     IUnitOfWork unitOfWork,
-    IRequestClient<CreateClientMessage> clientClient,
+    IChatClientService chatClientService,
     ILogger<RecoverCommandHandler> logger)
     : ICommandHandler<RecoverCommand, RecoverDto>
 {
-    private static readonly byte[] RecoveryContext = Encoding.ASCII.GetBytes("cendrite-recovery-v1");
-    private static readonly byte[] DeviceApprovalContext = Encoding.ASCII.GetBytes("device-approval-v1");
     private static readonly Error RecoveryFailed = Errors.General.UnspecifiedError("Recovery failed");
 
     public async ValueTask<Result<RecoverDto>> Handle(RecoverCommand cmd, CancellationToken ct)
@@ -46,7 +42,7 @@ public sealed class RecoverCommandHandler(
 
         var device = deviceService.RegisterDevice(user, cmd.DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, DeviceConstants.ApprovedByAccount, cmd.DeviceApproval);
 
-        var createClientResult = await CreateClient(device.Id, device.ConnectionId, user.Id);
+        var createClientResult = await chatClientService.CreateClientAsync(user.Id, device.Id, device.ConnectionId, ct);
         if (createClientResult.Success is false)
             return Result.Fail<RecoverDto>(RecoveryFailed);
 
@@ -78,37 +74,11 @@ public sealed class RecoverCommandHandler(
 
     private bool AreSignaturesValid(RecoveryChallenge challenge, RecoverCommand cmd)
     {
-        var challengeBytes = Convert.FromBase64String(challenge.ChallengeValue);
-        var accountKey = Convert.FromBase64String(cmd.AccountPublicKey);
-        var deviceKey = Convert.FromBase64String(cmd.DevicePublicKey);
-
-        var valid = signatureVerifier.VerifyNonce(Concat(RecoveryContext, challengeBytes), cmd.ChallengeSignature, cmd.AccountPublicKey)
-                    && signatureVerifier.VerifyNonce(Concat(DeviceApprovalContext, accountKey, deviceKey), cmd.DeviceApproval, cmd.AccountPublicKey);
+        var valid = signatureVerifier.VerifyNonce(SignedMessages.RecoveryChallenge(challenge.ChallengeValue), cmd.ChallengeSignature, cmd.AccountPublicKey)
+                    && signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(cmd.AccountPublicKey, cmd.DevicePublicKey), cmd.DeviceApproval, cmd.AccountPublicKey);
         if (!valid)
             logger.LogWarning("Recovery challenge {ChallengeId} has an invalid signature", challenge.Id);
 
         return valid;
-    }
-
-    private static string Concat(params byte[][] parts)
-    {
-        return Convert.ToBase64String(parts.SelectMany(p => p).ToArray());
-    }
-
-    private async ValueTask<Result> CreateClient(Guid deviceId, Guid connectionId, Guid userId)
-    {
-        var response = await clientClient.GetResponse<CreateClientResponse>(new CreateClientMessage
-        {
-            CorrelationId = Guid.NewGuid(),
-            DeviceId = deviceId,
-            ConnectionId = connectionId,
-            UserId = userId
-        });
-
-        if (response.Message.IsSuccess)
-            return Result.Ok();
-
-        logger.LogError("Got a fail response from the Chat server attempting to create a Client for Device with ID {DeviceId}", deviceId);
-        return Result.Fail(Errors.General.UnspecifiedError("Failed to create client"));
     }
 }

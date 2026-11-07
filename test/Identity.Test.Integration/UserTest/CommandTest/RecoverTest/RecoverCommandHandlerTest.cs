@@ -7,6 +7,7 @@ using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.BeginRecovery;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
 using Identity.Application.Features.User.Commands.Recover;
+using Identity.Application.Interfaces;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Constants;
@@ -42,7 +43,7 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
             sp.GetRequiredService<IVerifyNonceService>(),
             sp.GetRequiredService<IDeviceService>(),
             sp.GetRequiredService<IUnitOfWork>(),
-            sp.GetRequiredService<IRequestClient<CreateClientMessage>>(),
+            sp.GetRequiredService<IChatClientService>(),
             sp.GetRequiredService<ILogger<RecoverCommandHandler>>());
     }
 

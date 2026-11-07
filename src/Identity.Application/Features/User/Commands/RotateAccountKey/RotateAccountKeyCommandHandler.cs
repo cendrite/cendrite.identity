@@ -1,9 +1,9 @@
-using System.Text;
 using Cendrite.Domain.Common;
 using Identity.Application.Abstractions;
 using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.Authentication.Commands.VerifyNonce;
+using Identity.Application.Services;
 using Identity.Domain.Common;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,6 @@ public sealed class RotateAccountKeyCommandHandler(
     ILogger<RotateAccountKeyCommandHandler> logger)
     : ICommandHandler<RotateAccountKeyCommand>
 {
-    private static readonly byte[] RotationContext = Encoding.ASCII.GetBytes("account-rotate-v1");
     private static readonly Error RotationFailed = Errors.General.UnspecifiedError("Rotation failed");
 
     public async ValueTask<Result> Handle(RotateAccountKeyCommand cmd, CancellationToken ct)
@@ -55,8 +54,7 @@ public sealed class RotateAccountKeyCommandHandler(
 
     private bool AreSignaturesValid(string oldAccountPublicKey, RotateAccountKeyCommand cmd, string devicePublicKey)
     {
-        byte[] message = [.. RotationContext, .. Convert.FromBase64String(oldAccountPublicKey), .. Convert.FromBase64String(cmd.NewAccountPublicKey)];
-        var encoded = Convert.ToBase64String(message);
+        var encoded = SignedMessages.AccountRotation(oldAccountPublicKey, cmd.NewAccountPublicKey);
 
         return signatureVerifier.VerifyNonce(encoded, cmd.Proof, cmd.NewAccountPublicKey)
                && signatureVerifier.VerifyNonce(encoded, cmd.Approval, devicePublicKey);
