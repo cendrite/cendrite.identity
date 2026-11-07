@@ -12,6 +12,7 @@ using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Application.Features.User.Commands.Recover;
 using Identity.Application.Features.User.Commands.Signup;
+using Identity.Application.Features.User.Queries.GetAccountKey;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,6 +48,17 @@ internal sealed class UserEndpoints : IEndpoint
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapGet("/account-key", async (ISender sender, HttpContext ctx) =>
+            {
+                var result = await sender.Send(new GetAccountKeyQuery { UserId = ctx.User.GetUserId() });
+                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .RequireAuthorization()
+            .Produces<GetAccountKeyDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
