@@ -23,7 +23,7 @@ public sealed class RotateAccountKeyCommandHandler(
 
     public async ValueTask<Result> Handle(RotateAccountKeyCommand cmd, CancellationToken ct)
     {
-        if (await rateLimiter.IsAllowedAsync($"account-key:rotate:{cmd.UserId}", 3, TimeSpan.FromDays(1), ct) is false)
+        if (await rateLimiter.IsAllowedAsync($"account-key:rotate:{cmd.DeviceId}", 3, TimeSpan.FromDays(1), ct) is false)
             return Result.Fail(Errors.General.TooManyRequests());
 
         var user = await userRepository.GetSinleAsync(new UserWithDevicesSpec(cmd.UserId, excludeDeleted: true), ct);

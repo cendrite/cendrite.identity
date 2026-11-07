@@ -104,6 +104,17 @@ public class RotateAccountKeyCommandHandlerTest
     }
 
     [Fact]
+    public async Task Handle_Should_Rate_Limit_Per_Device_So_One_Device_Cannot_Use_Up_The_Others()
+    {
+        // Act
+        await _sut.Handle(Command(), CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync($"account-key:rotate:{_device.Id}", 3, TimeSpan.FromDays(1), A<CancellationToken>._))
+            .MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
     public async Task Handle_Given_Device_Not_On_The_Account_Should_Fail_Without_Verifying()
     {
         // Act
