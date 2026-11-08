@@ -11,6 +11,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.Device;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.CommandTest.RedeemLinkCodeTest;
 
@@ -24,7 +25,7 @@ public class RedeemLinkCodeCommandHandlerTest
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
     private readonly RedeemLinkCodeCommandHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), "account-key");
+    private readonly User _user = new(Guid.NewGuid(), "account-key", UserTags.New());
     private readonly Device _issuer;
     private readonly LinkCode _code;
 

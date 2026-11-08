@@ -9,6 +9,7 @@ using Identity.Domain.Aggregates;
 using Identity.Domain.Services.User;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.ConsumerTest;
 
@@ -34,7 +35,7 @@ public class RollbackUserDeleteConsumerTest
     public async Task Consume_Valid_Message_Should_Revert_Soft_Delete()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         user.SetDelete();
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);

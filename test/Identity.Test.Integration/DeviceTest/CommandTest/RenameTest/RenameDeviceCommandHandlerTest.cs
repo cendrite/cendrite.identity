@@ -10,6 +10,7 @@ using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.DeviceTest.CommandTest.RenameTest;
 
@@ -75,7 +76,7 @@ public class RenameDeviceCommandHandlerTest : IntegrationTestBase
 
     private async Task<(User, Device)> SaveUserWithDevice(bool deleted = false)
     {
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "testKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         if (deleted) device.SetDelete();
         user.AddDevice(device);

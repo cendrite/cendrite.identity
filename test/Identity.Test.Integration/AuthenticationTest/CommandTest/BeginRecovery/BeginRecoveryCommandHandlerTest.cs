@@ -7,6 +7,7 @@ using Identity.Domain.Common;
 using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.Extensions.DependencyInjection;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.AuthenticationTest.CommandTest.BeginRecovery;
 
@@ -46,7 +47,7 @@ public class BeginRecoveryCommandHandlerTest : IntegrationTestBase
     {
         // Arrange
         var knownKey = NewKey();
-        Db.User.Add(new User(Guid.NewGuid(), knownKey));
+        Db.User.Add(new User(Guid.NewGuid(), knownKey, UserTags.New()));
         await Db.SaveChangesAsync();
 
         // Act

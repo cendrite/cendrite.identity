@@ -11,6 +11,7 @@ using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.AuthenticationTest.CommandTest.Logout;
 
@@ -32,7 +33,7 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Command_Should_Logout_User_And_Delete_Device()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         var device = new Device(Guid.NewGuid(), "testKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 

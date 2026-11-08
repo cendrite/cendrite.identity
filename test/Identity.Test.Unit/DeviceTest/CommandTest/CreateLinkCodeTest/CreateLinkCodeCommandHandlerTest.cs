@@ -9,6 +9,7 @@ using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.CommandTest.CreateLinkCodeTest;
 
@@ -19,7 +20,7 @@ public class CreateLinkCodeCommandHandlerTest
     private readonly IRateLimiter _fakeRateLimiter = A.Fake<IRateLimiter>();
     private readonly CreateLinkCodeCommandHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), "account-key");
+    private readonly User _user = new(Guid.NewGuid(), "account-key", UserTags.New());
     private readonly Device _device;
 
     public CreateLinkCodeCommandHandlerTest()

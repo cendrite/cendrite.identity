@@ -6,6 +6,7 @@ using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.QueryTest.GetConnectionIdsByUserTest;
 

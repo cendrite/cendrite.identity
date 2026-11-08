@@ -109,7 +109,7 @@ public class RotateAccountKeyCommandHandlerTest : IntegrationTestBase
 
     private async Task<(User, Device, KeyPair)> SaveUserWithDevice(KeyPair account)
     {
-        var user = new User(Guid.NewGuid(), account.PublicKey);
+        var user = new User(Guid.NewGuid(), account.PublicKey, UserTags.New());
         var key = new KeyPair();
         var device = new Device(Guid.NewGuid(), key.PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);

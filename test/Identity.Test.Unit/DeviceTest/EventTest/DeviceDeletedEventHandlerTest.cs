@@ -9,6 +9,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.Device;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.EventTest;
 
@@ -27,7 +28,7 @@ public class DeviceDeletedEventHandlerTest
     public async Task Handle_Given_Deleted_Device_Should_Publish_Message()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "account-key");
+        var user = new User(Guid.NewGuid(), "account-key", UserTags.New());
         var device = new Device(Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         device.SetDelete();
         user.AddDevice(device);

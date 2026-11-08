@@ -22,7 +22,7 @@ public class GetAccountKeyQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Existing_User_Should_Return_The_Stored_Account_Public_Key()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), new KeyPair().PublicKey);
+        var user = new User(Guid.NewGuid(), new KeyPair().PublicKey, UserTags.New());
         Db.User.Add(user);
         await Db.SaveChangesAsync();
 

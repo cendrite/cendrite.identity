@@ -13,6 +13,7 @@ using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.DeviceTest.CommandTest.DeleteTest;
 
@@ -35,7 +36,7 @@ public class DeleteDeviceCommandHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Command_Should_Delete_Device_And_Raise_Logout_And_DeviceDeleted()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "testKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
@@ -63,7 +64,7 @@ public class DeleteDeviceCommandHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Already_Deleted_Device_Should_Return_NotFound()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "testKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();
         user.AddDevice(device);

@@ -2,6 +2,7 @@
 using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.AggregateRootTest;
 
@@ -11,7 +12,7 @@ public class UserTest
     public void Constructor_Should_Set_AccountPublicKey()
     {
         // Act
-        var user = new User(Guid.NewGuid(), "account-key");
+        var user = new User(Guid.NewGuid(), "account-key", UserTags.New());
 
         // Assert
         user.AccountPublicKey.Should().Be("account-key");
@@ -22,7 +23,7 @@ public class UserTest
     public void GetDevices_Should_Exclude_Deleted_Devices_By_Default()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "account-key");
+        var user = new User(Guid.NewGuid(), "account-key", UserTags.New());
         var active = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         var deleted = new Device(Guid.NewGuid(), "key-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         deleted.SetDelete();
@@ -42,7 +43,7 @@ public class UserTest
     public void GetDevice_Should_Throw_For_Deleted_Device_Unless_Included()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "account-key");
+        var user = new User(Guid.NewGuid(), "account-key", UserTags.New());
         var device = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         device.SetDelete();
         user.AddDevice(device);
@@ -59,7 +60,7 @@ public class UserTest
     public void RotateAccountKey_Should_Record_Old_And_New_Key_And_Swap_The_Key()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "old-key");
+        var user = new User(Guid.NewGuid(), "old-key", UserTags.New());
         var device = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
 
@@ -81,7 +82,7 @@ public class UserTest
     public void RotateAccountKey_Should_Chain_Consecutive_Rotations()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "key-a");
+        var user = new User(Guid.NewGuid(), "key-a", UserTags.New());
         var device = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
 
@@ -99,7 +100,7 @@ public class UserTest
     public void RotateAccountKey_From_Deleted_Device_Should_Throw_And_Keep_The_Key()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "old-key");
+        var user = new User(Guid.NewGuid(), "old-key", UserTags.New());
         var device = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         device.SetDelete();
         user.AddDevice(device);

@@ -12,6 +12,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.AuthenticationTest.CommandTest.VerifyNonce;
 
@@ -41,7 +42,7 @@ public class VerifyNonceCommandHandlerTest
 
     private static (User user, Device device) CreateUserWithDevice()
     {
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "doesntmatter", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop,
             DevicePlatform.Windows, user.Id);
         user.AddDevice(device);

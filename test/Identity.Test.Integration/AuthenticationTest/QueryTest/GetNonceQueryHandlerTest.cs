@@ -12,6 +12,7 @@ using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.AuthenticationTest.QueryTest;
 
@@ -32,7 +33,7 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
     public async void Handle_WhenQueryValid_Should_Generate_Nonce_And_Cache_And_Return()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop,
             DevicePlatform.Android, user.Id);
         user.AddDevice(device);
@@ -82,7 +83,7 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Deleted_User_Should_Return_Unauthorized()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         user.AddDevice(device);
         user.SetDelete();
@@ -107,7 +108,7 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Unknown_Device_Should_Return_Unauthorized_And_Not_Cache()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         Db.User.Add(user);
         await Db.SaveChangesAsync();
 
@@ -129,7 +130,7 @@ public class GetNonceQueryHandlerTest : IntegrationTestBase
     public async Task Handle_WhenDeviceDeleted_Should_Still_Issue_Nonce()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();
         user.AddDevice(device);

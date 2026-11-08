@@ -58,7 +58,7 @@ public class CreateLinkCodeCommandHandlerTest : IntegrationTestBase
 
     private async Task<(User, Device)> SaveUserWithDevice()
     {
-        var user = new User(Guid.NewGuid(), new KeyPair().PublicKey);
+        var user = new User(Guid.NewGuid(), new KeyPair().PublicKey, UserTags.New());
         var device = new Device(Guid.NewGuid(), new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         Db.User.Add(user);

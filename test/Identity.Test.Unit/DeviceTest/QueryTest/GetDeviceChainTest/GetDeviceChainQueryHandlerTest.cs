@@ -6,6 +6,7 @@ using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.QueryTest.GetDeviceChainTest;
 
@@ -23,7 +24,7 @@ public class GetDeviceChainQueryHandlerTest
     public async Task Handle_Should_Return_Every_Device_Including_Removed_Ones_And_The_Rotations()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "key-a");
+        var user = new User(Guid.NewGuid(), "key-a", UserTags.New());
         var phone = new Device(Guid.NewGuid(), "phone-key", "phone-signal", "1.0", DeviceType.Mobile, DevicePlatform.Android, user.Id, "account", "phone-approval");
         var laptop = new Device(Guid.NewGuid(), "laptop-key", "laptop-signal", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id, phone.Id.ToString(), "laptop-approval");
         phone.SetDelete();

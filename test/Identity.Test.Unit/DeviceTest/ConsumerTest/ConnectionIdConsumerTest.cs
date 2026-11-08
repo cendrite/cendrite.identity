@@ -9,6 +9,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.ConsumerTest;
 
@@ -29,7 +30,7 @@ public class ConnectionIdConsumerTest
     public async Task Consume_Given_User_Should_Respond_With_Active_Connection_Ids_Only()
     {
         // Arrange
-        var user = new User(_message.TenantId, "account-key");
+        var user = new User(_message.TenantId, "account-key", UserTags.New());
         var active = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         var deleted = new Device(Guid.NewGuid(), "key-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         deleted.SetDelete();

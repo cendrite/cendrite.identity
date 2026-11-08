@@ -11,6 +11,7 @@ using Identity.Infrastructure.Persistence.Context;
 using Identity.Test.Integration.Setup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.UserTest.EventTest;
 
@@ -29,7 +30,7 @@ public class UserLoggedOutEventHandlerTest : IntegrationTestBase
     public async Task Handle_Given_Stored_Device_Should_Publish_Its_Connection_Id()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         Db.User.Add(user);

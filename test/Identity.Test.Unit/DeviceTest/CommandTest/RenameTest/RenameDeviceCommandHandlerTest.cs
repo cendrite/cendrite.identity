@@ -7,6 +7,7 @@ using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.CommandTest.RenameTest;
 
@@ -16,7 +17,7 @@ public class RenameDeviceCommandHandlerTest
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
     private readonly RenameDeviceCommandHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), "account-key");
+    private readonly User _user = new(Guid.NewGuid(), "account-key", UserTags.New());
     private readonly Device _device;
 
     public RenameDeviceCommandHandlerTest()

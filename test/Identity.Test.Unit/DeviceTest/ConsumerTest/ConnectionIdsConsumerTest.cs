@@ -9,6 +9,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.ConsumerTest;
 
@@ -18,8 +19,8 @@ public class ConnectionIdsConsumerTest
     public async Task Consume_Should_Respond_With_Each_Users_Active_Connection_Ids()
     {
         // Arrange
-        var alice = new User(Guid.NewGuid(), "key-a");
-        var bob = new User(Guid.NewGuid(), "key-b");
+        var alice = new User(Guid.NewGuid(), "key-a", UserTags.New());
+        var bob = new User(Guid.NewGuid(), "key-b", UserTags.New());
         var aliceDevice = new Device(Guid.NewGuid(), "d-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, alice.Id);
         var bobDevice = new Device(Guid.NewGuid(), "d-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
         alice.AddDevice(aliceDevice);

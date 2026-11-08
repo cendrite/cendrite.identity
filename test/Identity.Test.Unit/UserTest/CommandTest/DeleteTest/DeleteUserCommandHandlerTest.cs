@@ -5,6 +5,7 @@ using Identity.Application.Features.User.Commands.Delete;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.CommandTest.DeleteTest;
 
@@ -49,7 +50,7 @@ public class DeleteUserCommandHandlerTest
         // Arrange
         var command = new DeleteUserCommand { Id = Guid.NewGuid() };
 
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);
 
@@ -70,7 +71,7 @@ public class DeleteUserCommandHandlerTest
         //Arrage
         var command = new DeleteUserCommand { Id = Guid.NewGuid() };
 
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         A.CallTo(() => _fakeUserRepository.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);
 

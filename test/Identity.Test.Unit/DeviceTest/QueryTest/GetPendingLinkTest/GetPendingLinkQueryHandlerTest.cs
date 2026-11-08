@@ -7,6 +7,7 @@ using Identity.Application.Features.Device.Queries.GetPendingLink;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
 using Identity.Domain.Enums;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.QueryTest.GetPendingLinkTest;
 
@@ -16,7 +17,7 @@ public class GetPendingLinkQueryHandlerTest
     private readonly IDeviceLinkCache _fakeCache = A.Fake<IDeviceLinkCache>();
     private readonly GetPendingLinkQueryHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), "account-key");
+    private readonly User _user = new(Guid.NewGuid(), "account-key", UserTags.New());
     private readonly PendingLink _pending;
 
     public GetPendingLinkQueryHandlerTest()

@@ -47,6 +47,7 @@ public class SignupCommandHandlerTest : IntegrationTestBase
             sp.GetRequiredService<IUnitOfWork>(),
             sp.GetRequiredService<IRequestClient<CreateUserProfileMessage>>(),
             sp.GetRequiredService<IChatClientService>(),
+            sp.GetRequiredService<IUserTagGenerator>(),
             sp.GetRequiredService<ILogger<SignupCommandHandler>>());
     }
 
@@ -66,6 +67,8 @@ public class SignupCommandHandlerTest : IntegrationTestBase
         var user = Db.User.Single();
         user.Id.Should().Be(result.Value!.UserId);
         user.AccountPublicKey.Should().Be(account.PublicKey);
+        user.UserTag.Should().MatchRegex("^[0-9]{12}$");
+        Harness.Published.Select<CreateUserProfileMessage>().Should().Contain(m => m.Context.Message.UserTag == user.UserTag);
 
         var stored = Db.Device.Single();
         stored.Id.Should().Be(result.Value.DeviceId);
