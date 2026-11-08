@@ -172,11 +172,21 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated");
 
+                    b.Property<string>("UserTag")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasColumnName("user_tag");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountPublicKey")
                         .IsUnique()
                         .HasDatabaseName("idx_account_public_key");
+
+                    b.HasIndex("UserTag")
+                        .IsUnique()
+                        .HasDatabaseName("idx_user_tag");
 
                     b.ToTable("user", (string)null);
                 });
