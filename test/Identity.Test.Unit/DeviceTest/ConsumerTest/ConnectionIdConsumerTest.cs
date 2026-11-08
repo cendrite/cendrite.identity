@@ -30,8 +30,8 @@ public class ConnectionIdConsumerTest
     {
         // Arrange
         var user = new User(_message.TenantId, "account-key");
-        var active = new Device(Guid.NewGuid(), "key-1", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
-        var deleted = new Device(Guid.NewGuid(), "key-2", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var active = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var deleted = new Device(Guid.NewGuid(), "key-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         deleted.SetDelete();
         user.AddDevice(active);
         user.AddDevice(deleted);

@@ -40,7 +40,7 @@ public sealed class RecoverCommandHandler(
             return Result.Fail<RecoverDto>(RecoveryFailed);
         }
 
-        var device = deviceService.RegisterDevice(user, cmd.DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, DeviceConstants.ApprovedByAccount, cmd.DeviceApproval);
+        var device = deviceService.RegisterDevice(user, cmd.DevicePublicKey, cmd.SignalIdentityKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, DeviceConstants.ApprovedByAccount, cmd.DeviceApproval);
 
         var createClientResult = await chatClientService.CreateClientAsync(user.Id, device.Id, device.ConnectionId, ct);
         if (createClientResult.Success is false)
@@ -75,7 +75,7 @@ public sealed class RecoverCommandHandler(
     private bool AreSignaturesValid(RecoveryChallenge challenge, RecoverCommand cmd)
     {
         var valid = signatureVerifier.VerifyNonce(SignedMessages.RecoveryChallenge(challenge.ChallengeValue), cmd.ChallengeSignature, cmd.AccountPublicKey)
-                    && signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(cmd.AccountPublicKey, cmd.DevicePublicKey), cmd.DeviceApproval, cmd.AccountPublicKey);
+                    && signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(cmd.AccountPublicKey, cmd.DevicePublicKey, cmd.SignalIdentityKey), cmd.DeviceApproval, cmd.AccountPublicKey);
         if (!valid)
             logger.LogWarning("Recovery challenge {ChallengeId} has an invalid signature", challenge.Id);
 

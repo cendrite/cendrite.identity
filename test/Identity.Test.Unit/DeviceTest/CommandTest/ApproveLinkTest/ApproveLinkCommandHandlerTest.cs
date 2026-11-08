@@ -40,18 +40,18 @@ public class ApproveLinkCommandHandlerTest
         _sut = new ApproveLinkCommandHandler(_fakeRepo, _fakeCache, _fakeVerifier, _fakeDeviceService, _fakeUnitOfWork, _fakeClient,
             A.Fake<ILogger<ApproveLinkCommandHandler>>());
 
-        _approver = new Device(Guid.NewGuid(), "approver-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
+        _approver = new Device(Guid.NewGuid(), "approver-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
         _user.AddDevice(_approver);
-        _pending = new PendingLink(Guid.NewGuid(), _user.Id, _approver.Id, NewDeviceKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows,
+        _pending = new PendingLink(Guid.NewGuid(), _user.Id, _approver.Id, NewDeviceKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows,
             "poll-secret-hash", DateTime.UtcNow.AddMinutes(5));
 
         A.CallTo(() => _fakeCache.GetPendingAsync(_pending.Id, A<CancellationToken>._)).Returns(_pending);
         A.CallTo(() => _fakeCache.TryClaimDecisionAsync(_pending.Id, A<CancellationToken>._)).Returns(true);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(_user);
         A.CallTo(() => _fakeVerifier.VerifyNonce(A<string>._, A<string>._, A<string>._)).Returns(true);
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
-            .ReturnsLazily((User user, string key, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
-                new Device(Guid.NewGuid(), key, version, type, platform, user.Id, approvedBy, approval));
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
+            .ReturnsLazily((User user, string key, string signal, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
+                new Device(Guid.NewGuid(), key, signal, version, type, platform, user.Id, approvedBy, approval));
         RespondFromChatServer(isSuccess: true);
     }
 
@@ -69,7 +69,7 @@ public class ApproveLinkCommandHandlerTest
 
     private void AssertNothingCreated()
     {
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
             .MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
     }
@@ -82,7 +82,7 @@ public class ApproveLinkCommandHandlerTest
 
         // Assert
         result.Success.Should().BeTrue();
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(_user, NewDeviceKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows,
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(_user, NewDeviceKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows,
             _approver.Id.ToString(), "approval")).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCache.SetPendingAsync(A<PendingLink>.That.Matches(p => p.Status == PendingLinkStatus.Approved && p.DeviceId != null),
@@ -95,7 +95,7 @@ public class ApproveLinkCommandHandlerTest
     {
         // Arrange
         var message = Convert.ToBase64String([
-            .. Encoding.ASCII.GetBytes("device-approval-v1"), .. Convert.FromBase64String(AccountKey), .. Convert.FromBase64String(NewDeviceKey)]);
+            .. Encoding.ASCII.GetBytes("device-approval-v1"), .. Convert.FromBase64String(AccountKey), .. Convert.FromBase64String(NewDeviceKey), .. Convert.FromBase64String("BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]);
 
         // Act
         await _sut.Handle(Command(), CancellationToken.None);

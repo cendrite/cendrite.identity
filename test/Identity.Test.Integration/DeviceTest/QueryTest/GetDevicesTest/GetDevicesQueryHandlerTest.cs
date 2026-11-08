@@ -31,9 +31,9 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
-        var device1 = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device1 = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
-        var device2 = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device2 = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
         user.AddDevice(device1);
         user.AddDevice(device2);
@@ -61,12 +61,12 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
-        var seenDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var seenDevice = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         seenDevice.SetLastSeen();
 
-        var neverSeenDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var neverSeenDevice = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
-        var deletedDevice = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var deletedDevice = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         deletedDevice.SetDelete();
 
         user.AddDevice(seenDevice);
@@ -93,9 +93,9 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
-        var device1 = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device1 = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
-        var device2 = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device2 = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
         user.AddDevice(device1);
         user.AddDevice(device2);
@@ -122,7 +122,7 @@ public class GetDevicesQueryHandlerTest : IntegrationTestBase
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
-        var device = new Device(Guid.NewGuid(), "somekey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), "somekey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();
 
         user.AddDevice(device);

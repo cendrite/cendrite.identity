@@ -49,9 +49,9 @@ public class SignupCommandHandlerTest
         A.CallTo(() => _fakeProofOfWork.IsSolved(A<byte[]>._, A<ulong>._, A<int>._)).Returns(true);
         A.CallTo(() => _fakeVerifier.VerifyNonce(A<string>._, A<string>._, A<string>._)).Returns(true);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns((User?)null);
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
-            .ReturnsLazily((User user, string key, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
-                new Device(Guid.NewGuid(), key, version, type, platform, user.Id, approvedBy, approval));
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
+            .ReturnsLazily((User user, string key, string signal, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
+                new Device(Guid.NewGuid(), key, signal, version, type, platform, user.Id, approvedBy, approval));
         RespondFromProfile(isSuccess: true);
         RespondFromChatServer(isSuccess: true);
     }
@@ -64,6 +64,7 @@ public class SignupCommandHandlerTest
         PowNonce = 42,
         ChallengeSignature = "challenge-signature",
         DevicePublicKey = DeviceKey,
+        SignalIdentityKey = "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         DeviceApproval = "device-approval",
         DeviceAppVersion = "1.0",
         DeviceType = DeviceType.Desktop,
@@ -98,7 +99,7 @@ public class SignupCommandHandlerTest
         result.Success.Should().BeTrue();
         A.CallTo(() => _fakeRepo.CreateAsync(A<User>.That.Matches(u => u.Id == result.Value!.UserId && u.AccountPublicKey == AccountKey), A<CancellationToken>._))
             .MustHaveHappenedOnceExactly();
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, DeviceKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, DeviceKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             DeviceConstants.ApprovedByAccount, "device-approval")).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCache.DeleteChallengeAsync(_challenge.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
@@ -111,7 +112,7 @@ public class SignupCommandHandlerTest
         var challengeBytes = Convert.FromBase64String(_challenge.ChallengeValue);
         var signupMessage = Convert.ToBase64String([.. Encoding.ASCII.GetBytes("cendrite-signup-v1"), .. challengeBytes]);
         var approvalMessage = Convert.ToBase64String([
-            .. Encoding.ASCII.GetBytes("device-approval-v1"), .. Convert.FromBase64String(AccountKey), .. Convert.FromBase64String(DeviceKey)]);
+            .. Encoding.ASCII.GetBytes("device-approval-v1"), .. Convert.FromBase64String(AccountKey), .. Convert.FromBase64String(DeviceKey), .. Convert.FromBase64String("BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]);
 
         // Act
         await _sut.Handle(Command(), CancellationToken.None);

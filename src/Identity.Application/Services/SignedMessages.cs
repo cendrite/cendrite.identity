@@ -16,8 +16,8 @@ public static class SignedMessages
 
     public static string RecoveryChallenge(string challenge) => Build(RecoveryContext, challenge);
 
-    public static string DeviceApproval(string accountPublicKey, string devicePublicKey) =>
-        Build(DeviceApprovalContext, accountPublicKey, devicePublicKey);
+    public static string DeviceApproval(string accountPublicKey, string devicePublicKey, string signalIdentityKey) =>
+        Build(DeviceApprovalContext, accountPublicKey, devicePublicKey, signalIdentityKey);
 
     public static string AccountRotation(string oldAccountPublicKey, string newAccountPublicKey) =>
         Build(AccountRotationContext, oldAccountPublicKey, newAccountPublicKey);

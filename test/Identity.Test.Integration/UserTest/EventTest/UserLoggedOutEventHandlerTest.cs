@@ -30,7 +30,7 @@ public class UserLoggedOutEventHandlerTest : IntegrationTestBase
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), "key-1", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var device = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         Db.User.Add(user);
         await Db.SaveChangesAsync();

@@ -28,7 +28,7 @@ public class GetDevicesQueryHandlerTest
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
-        var device = new Device(Guid.NewGuid(), "someKey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
+        var device = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
 
         user.AddDevice(device);
 

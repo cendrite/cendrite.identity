@@ -18,6 +18,9 @@ public class RedeemLinkCodeCommandValidator : AbstractValidator<RedeemLinkCodeCo
         RuleFor(x => x.DevicePublicKey)
             .MustBePublicKey().WithMessage(Errors.General.UnexpectedValue(nameof(RedeemLinkCodeCommand.DevicePublicKey)).Description);
 
+        RuleFor(x => x.SignalIdentityKey)
+            .MustBeSignalIdentityKey().WithMessage(Errors.General.UnexpectedValue(nameof(RedeemLinkCodeCommand.SignalIdentityKey)).Description);
+
         RuleFor(x => x.DeviceAppVersion)
             .MustBeAppVersion().WithMessage(Errors.General.UnexpectedValue(nameof(RedeemLinkCodeCommand.DeviceAppVersion)).Description);
 

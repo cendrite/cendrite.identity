@@ -22,7 +22,7 @@ public class GetPendingLinkQueryHandlerTest
     public GetPendingLinkQueryHandlerTest()
     {
         _sut = new GetPendingLinkQueryHandler(_fakeRepo, _fakeCache);
-        _pending = new PendingLink(Guid.NewGuid(), _user.Id, Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop, DevicePlatform.MacOS,
+        _pending = new PendingLink(Guid.NewGuid(), _user.Id, Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.MacOS,
             "poll-secret-hash", DateTime.UtcNow.AddMinutes(5));
 
         A.CallTo(() => _fakeCache.GetPendingAsync(_pending.Id, A<CancellationToken>._)).Returns(_pending);
@@ -43,7 +43,7 @@ public class GetPendingLinkQueryHandlerTest
         var result = await _sut.Handle(Query(), CancellationToken.None);
 
         // Assert
-        result.Value.Should().BeEquivalentTo(new PendingLinkDto(_pending.Id, "device-key", "MacOS", "account-key", _pending.ExpiresAt));
+        result.Value.Should().BeEquivalentTo(new PendingLinkDto(_pending.Id, "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "MacOS", "account-key", _pending.ExpiresAt));
     }
 
     [Fact]

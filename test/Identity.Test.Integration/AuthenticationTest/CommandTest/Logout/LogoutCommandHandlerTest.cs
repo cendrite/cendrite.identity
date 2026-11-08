@@ -34,7 +34,7 @@ public class LogoutCommandHandlerTest : IntegrationTestBase
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
-        var device = new Device(Guid.NewGuid(), "testKey", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), "testKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
         user.AddDevice(device);
 

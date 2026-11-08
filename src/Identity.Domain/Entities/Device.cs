@@ -8,6 +8,7 @@ public class Device : Entity
 {
     public string Name { get; private set; } = null!;
     public string PublicKey { get; init; } = null!;
+    public string SignalIdentityKey { get; private init; } = null!;
     public Guid ConnectionId { get; init; }
     public DateTime? LastSeen { get; private set; }
     public DeviceType Type { get; init; }
@@ -21,6 +22,7 @@ public class Device : Entity
 
     public Device(Guid id,
         string publicKey,
+        string signalIdentityKey,
         string appVersion,
         DeviceType type,
         DevicePlatform platform,
@@ -30,6 +32,7 @@ public class Device : Entity
     {
         Name = GenerateName(platform);
         PublicKey = publicKey;
+        SignalIdentityKey = signalIdentityKey;
         AppVersion = appVersion;
         UserId = userId;
         Type = type;

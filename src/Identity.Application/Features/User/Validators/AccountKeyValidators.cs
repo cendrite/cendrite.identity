@@ -7,6 +7,8 @@ public static class AccountKeyValidators
 {
     public const int PublicKeyLength = 32;
     public const int SignatureLength = 64;
+    public const int SignalIdentityKeyLength = 33;
+    public const byte SignalKeyType = 0x05;
 
     public static IRuleBuilderOptions<T, string> MustBePublicKey<T>(this IRuleBuilder<T, string> rule) =>
         rule.Must(value => IsBase64OfLength(value, PublicKeyLength));
@@ -14,8 +16,21 @@ public static class AccountKeyValidators
     public static IRuleBuilderOptions<T, string> MustBeSignature<T>(this IRuleBuilder<T, string> rule) =>
         rule.Must(value => IsBase64OfLength(value, SignatureLength));
 
+    public static IRuleBuilderOptions<T, string> MustBeSignalIdentityKey<T>(this IRuleBuilder<T, string> rule) =>
+        rule.Must(IsSignalIdentityKey);
+
     public static IRuleBuilderOptions<T, string> MustBeAppVersion<T>(this IRuleBuilder<T, string> rule) =>
         rule.Must(value => !string.IsNullOrEmpty(value) && value.Length <= 6 && Regex.IsMatch(value, @"^\d+\.\d{1,3}$"));
+
+    private static bool IsSignalIdentityKey(string? value)
+    {
+        if (string.IsNullOrEmpty(value) || value.Length > 64) return false;
+
+        var buffer = new byte[48];
+        return Convert.TryFromBase64String(value, buffer, out var written)
+               && written == SignalIdentityKeyLength
+               && buffer[0] == SignalKeyType;
+    }
 
     private static bool IsBase64OfLength(string? value, int length)
     {

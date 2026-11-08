@@ -34,7 +34,7 @@ public class RotateAccountKeyCommandHandlerTest
         _sut = new RotateAccountKeyCommandHandler(_fakeRepo, _fakeVerifier, _fakeRateLimiter, _fakeUnitOfWork,
             A.Fake<ILogger<RotateAccountKeyCommandHandler>>());
 
-        _device = new Device(Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
+        _device = new Device(Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
         _user.AddDevice(_device);
 
         A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(true);

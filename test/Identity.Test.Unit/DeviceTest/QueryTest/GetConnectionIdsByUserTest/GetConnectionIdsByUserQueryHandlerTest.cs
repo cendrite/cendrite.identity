@@ -41,7 +41,7 @@ public class GetConnectionIdsByUserQueryHandlerTest
         // Arrange
         var query = new GetConnectionIdsByUserQuery { TenantId = Guid.NewGuid() };
         var user = new User();
-        user.AddDevice(new Device(Guid.NewGuid(), "test", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id));
+        user.AddDevice(new Device(Guid.NewGuid(), "test", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id));
         A.CallTo(() => _fakeRepository.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
 
         // Act

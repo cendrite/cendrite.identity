@@ -45,9 +45,9 @@ public class RecoverCommandHandlerTest
         A.CallTo(() => _fakeCache.TryClaimChallengeAsync(_challenge.Id, A<CancellationToken>._)).Returns(true);
         A.CallTo(() => _fakeVerifier.VerifyNonce(A<string>._, A<string>._, A<string>._)).Returns(true);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns(_user);
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
-            .ReturnsLazily((User user, string key, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
-                new Device(Guid.NewGuid(), key, version, type, platform, user.Id, approvedBy, approval));
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
+            .ReturnsLazily((User user, string key, string signal, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
+                new Device(Guid.NewGuid(), key, signal, version, type, platform, user.Id, approvedBy, approval));
         RespondFromChatServer(isSuccess: true);
     }
 
@@ -57,6 +57,7 @@ public class RecoverCommandHandlerTest
         ChallengeId = _challenge.Id,
         ChallengeSignature = "challenge-signature",
         DevicePublicKey = DeviceKey,
+        SignalIdentityKey = "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         DeviceApproval = "device-approval",
         DeviceAppVersion = "1.0",
         DeviceType = DeviceType.Desktop,
@@ -69,7 +70,7 @@ public class RecoverCommandHandlerTest
 
     private void AssertNothingCreated()
     {
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
             .MustNotHaveHappened();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
     }
@@ -83,7 +84,7 @@ public class RecoverCommandHandlerTest
         // Assert
         result.Success.Should().BeTrue();
         result.Value!.UserId.Should().Be(_user.Id);
-        A.CallTo(() => _fakeDeviceService.RegisterDevice(_user, DeviceKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        A.CallTo(() => _fakeDeviceService.RegisterDevice(_user, DeviceKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             DeviceConstants.ApprovedByAccount, "device-approval")).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeCache.DeleteChallengeAsync(_challenge.Id, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
@@ -97,7 +98,7 @@ public class RecoverCommandHandlerTest
         var challengeBytes = Convert.FromBase64String(_challenge.ChallengeValue);
         var recoveryMessage = Convert.ToBase64String([.. Encoding.ASCII.GetBytes("cendrite-recovery-v1"), .. challengeBytes]);
         var approvalMessage = Convert.ToBase64String([
-            .. Encoding.ASCII.GetBytes("device-approval-v1"), .. Convert.FromBase64String(AccountKey), .. Convert.FromBase64String(DeviceKey)]);
+            .. Encoding.ASCII.GetBytes("device-approval-v1"), .. Convert.FromBase64String(AccountKey), .. Convert.FromBase64String(DeviceKey), .. Convert.FromBase64String("BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")]);
 
         // Act
         await _sut.Handle(Command(), CancellationToken.None);

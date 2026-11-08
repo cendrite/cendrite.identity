@@ -290,6 +290,12 @@ namespace Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("public_key");
 
+                    b.Property<string>("SignalIdentityKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("signal_identity_key");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("text")

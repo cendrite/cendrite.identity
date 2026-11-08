@@ -7,6 +7,7 @@ public sealed record PendingLink(
     Guid UserId,
     Guid IssuingDeviceId,
     string DevicePublicKey,
+    string SignalIdentityKey,
     string DeviceAppVersion,
     DeviceType DeviceType,
     DevicePlatform DevicePlatform,

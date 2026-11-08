@@ -87,7 +87,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
         // add nonce to cache
@@ -124,7 +124,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
         var nonce = Nonce.Create(user.Id, device.Id);
@@ -162,7 +162,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
         // add nonce to cache
@@ -203,7 +203,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
         var nonce = Nonce.Create(user.Id, device.Id);
@@ -237,7 +237,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
         user.SetDelete();
 
@@ -273,7 +273,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
         var nonce = Nonce.Create(Guid.NewGuid(), device.Id);
@@ -306,8 +306,8 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
-        var otherDevice = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var otherDevice = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
         user.AddDevice(otherDevice);
 
@@ -341,7 +341,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
 
         var nonce = Nonce.Create(user.Id, device.Id);
@@ -381,7 +381,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string privateKey = "mR6AP1dNY1eEp7Z7bn6q0gPiOvcDl3FX4th65LY3Zwg=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();
         user.AddDevice(device);
 
@@ -415,7 +415,7 @@ public class VerifyNonceCommandHandlerTest : IntegrationTestBase
         const string publicKey = "VlmK9Smh3RVtT7CHaHW5rbrYAWeM9ImVdP6WhmnMqK0=";
 
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), publicKey, "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
+        var device = new Device(Guid.NewGuid(), publicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
         device.SetDelete();
         user.AddDevice(device);
 

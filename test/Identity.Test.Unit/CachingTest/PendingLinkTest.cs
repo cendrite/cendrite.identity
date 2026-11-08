@@ -6,7 +6,7 @@ namespace Identity.Test.Unit.CachingTest;
 
 public class PendingLinkTest
 {
-    private readonly PendingLink _pending = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop,
+    private readonly PendingLink _pending = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop,
         DevicePlatform.Linux, "poll-secret-hash", DateTime.UtcNow.AddMinutes(5));
 
     [Fact]

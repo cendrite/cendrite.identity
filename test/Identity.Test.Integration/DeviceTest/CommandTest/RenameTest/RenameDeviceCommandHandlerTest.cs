@@ -76,7 +76,7 @@ public class RenameDeviceCommandHandlerTest : IntegrationTestBase
     private async Task<(User, Device)> SaveUserWithDevice(bool deleted = false)
     {
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), "testKey", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var device = new Device(Guid.NewGuid(), "testKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         if (deleted) device.SetDelete();
         user.AddDevice(device);
         await Db.User.AddAsync(user);

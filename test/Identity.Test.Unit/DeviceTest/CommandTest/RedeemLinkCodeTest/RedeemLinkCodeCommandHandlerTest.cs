@@ -32,7 +32,7 @@ public class RedeemLinkCodeCommandHandlerTest
     {
         _sut = new RedeemLinkCodeCommandHandler(_fakeRepo, _fakeCache, _fakeUnitOfWork, A.Fake<ILogger<RedeemLinkCodeCommandHandler>>());
 
-        _issuer = new Device(Guid.NewGuid(), "issuer-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
+        _issuer = new Device(Guid.NewGuid(), "issuer-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
         _user.AddDevice(_issuer);
         _code = new LinkCode(Code, _user.Id, _issuer.Id, DateTime.UtcNow.AddMinutes(5));
 
@@ -45,6 +45,7 @@ public class RedeemLinkCodeCommandHandlerTest
     {
         Code = code,
         DevicePublicKey = "new-device-key",
+        SignalIdentityKey = "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         DeviceAppVersion = "1.0",
         DeviceType = DeviceType.Desktop,
         DevicePlatform = DevicePlatform.Windows,
