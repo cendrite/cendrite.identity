@@ -25,9 +25,11 @@ public sealed class SignupCommandHandler(
     IUnitOfWork unitOfWork,
     IRequestClient<CreateUserProfileMessage> profileClient,
     IChatClientService chatClientService,
+    IUserTagGenerator userTagGenerator,
     ILogger<SignupCommandHandler> logger)
     : ICommandHandler<SignupCommand, SignupDto>
 {
+    private const int MaxTagAttempts = 5;
     private static readonly Error SignupFailed = Errors.General.UnspecifiedError("Signup failed");
 
     public async ValueTask<Result<SignupDto>> Handle(SignupCommand cmd, CancellationToken ct)
@@ -40,12 +42,16 @@ public sealed class SignupCommandHandler(
             || await AccountExists(cmd, ct))
             return Result.Fail<SignupDto>(SignupFailed);
 
-        var user = new Domain.Aggregates.User(Guid.NewGuid(), cmd.AccountPublicKey);
+        var userTag = await GenerateUniqueTag(ct);
+        if (userTag is null)
+            return Result.Fail<SignupDto>(SignupFailed);
+
+        var user = new Domain.Aggregates.User(Guid.NewGuid(), cmd.AccountPublicKey, userTag);
         var device = deviceService.RegisterDevice(user, cmd.DevicePublicKey, cmd.SignalIdentityKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, DeviceConstants.ApprovedByAccount, cmd.DeviceApproval);
 
         await userRepository.CreateAsync(user, ct);
 
-        var createProfileResult = await CreateProfile(user.Id, cmd.Username);
+        var createProfileResult = await CreateProfile(user.Id, cmd.Username, user.UserTag);
         if (createProfileResult.Success is false)
             return Result.Fail<SignupDto>(createProfileResult.Error);
 
@@ -105,13 +111,27 @@ public sealed class SignupCommandHandler(
         return exists;
     }
 
-    private async ValueTask<Result> CreateProfile(Guid userId, string username)
+    private async Task<string?> GenerateUniqueTag(CancellationToken ct)
+    {
+        for (var attempt = 0; attempt < MaxTagAttempts; attempt++)
+        {
+            var userTag = userTagGenerator.Generate();
+            if (await userRepository.GetSinleAsync(new UserByTagSpec(userTag), ct) is null)
+                return userTag;
+        }
+
+        logger.LogError("Could not find a free user tag after {Attempts} attempts", MaxTagAttempts);
+        return null;
+    }
+
+    private async ValueTask<Result> CreateProfile(Guid userId, string username, string userTag)
     {
         var response = await profileClient.GetResponse<CreateUserProfileResponse>(new CreateUserProfileMessage
         {
             CorrelationId = Guid.NewGuid(),
             UserId = userId,
-            Username = username
+            Username = username,
+            UserTag = userTag
         });
 
         if (response.Message.IsSuccess)
