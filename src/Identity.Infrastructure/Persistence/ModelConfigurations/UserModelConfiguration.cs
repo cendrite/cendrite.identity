@@ -1,4 +1,5 @@
 ﻿using Identity.Domain.Aggregates;
+using Identity.Domain.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,6 +23,15 @@ public class UserModelConfiguration : BaseModelConfiguration<User>
 
         builder.HasIndex(u => u.AccountPublicKey)
             .HasDatabaseName("idx_account_public_key")
+            .IsUnique();
+
+        builder.Property(u => u.UserTag)
+            .HasColumnName("user_tag")
+            .IsRequired()
+            .HasMaxLength(UserConstants.TagLength);
+
+        builder.HasIndex(u => u.UserTag)
+            .HasDatabaseName("idx_user_tag")
             .IsUnique();
 
         builder.HasMany(u => u.Devices)

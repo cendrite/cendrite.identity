@@ -25,7 +25,7 @@ public class GetDeviceChainQueryHandlerTest : IntegrationTestBase
     {
         // Arrange
         var oldAccount = new KeyPair();
-        var user = new User(Guid.NewGuid(), oldAccount.PublicKey);
+        var user = new User(Guid.NewGuid(), oldAccount.PublicKey, UserTags.New());
         var signal = KeyPair.NewSignalIdentityKey();
         var phone = new Device(Guid.NewGuid(), new KeyPair().PublicKey, signal, "1.0", DeviceType.Mobile, DevicePlatform.Android, user.Id, "account", "phone-approval");
         var removed = new Device(Guid.NewGuid(), new KeyPair().PublicKey, KeyPair.NewSignalIdentityKey(), "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id, phone.Id.ToString(), "old-approval");

@@ -8,6 +8,7 @@ using Identity.Domain.Aggregates;
 using Identity.Domain.Entities;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Cendrite.Authentication.Test.Unit.DeviceTest.ConsumerTest;
 

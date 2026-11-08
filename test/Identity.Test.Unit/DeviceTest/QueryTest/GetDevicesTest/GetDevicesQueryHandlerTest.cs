@@ -7,6 +7,7 @@ using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.QueryTest.GetDevicesTest;
 
@@ -26,7 +27,7 @@ public class GetDevicesQueryHandlerTest
     public async Task Handle_GivenADevice_ShouldReturnAListOfDevices()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         var device = new Device(Guid.NewGuid(), "someKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
 
@@ -53,7 +54,7 @@ public class GetDevicesQueryHandlerTest
     public async Task Handle_GivenNoDevices_Should_Return_Empty_Result()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         var query = new GetDevicesQuery()
         {

@@ -9,6 +9,7 @@ using Identity.Domain.Enums;
 using Identity.Domain.Events.Device;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.CommandTest.DeleteTest;
 
@@ -19,7 +20,7 @@ public class DeleteDeviceCommandHandlerTest
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
     private readonly DeleteDeviceCommandHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), "account-key");
+    private readonly User _user = new(Guid.NewGuid(), "account-key", UserTags.New());
     private readonly Device _device;
 
     public DeleteDeviceCommandHandlerTest()

@@ -8,6 +8,7 @@ using Identity.Test.Integration.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.UserTest.CommandTest.DeleteTest;
 
@@ -30,7 +31,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
     public async Task Handle_When_Command_Is_Valid_Should_Delete_User()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         await Db.AddAsync(user);
         await Db.SaveChangesAsync();
 
@@ -69,7 +70,7 @@ public class DeleteUserCommandHandlerTest : IntegrationTestBase
     public async Task Handle_When_User_Is_Already_Deleted_Should_Return_UnspecifiedError()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         user.SetDelete();
         await Db.AddAsync(user);
         await Db.SaveChangesAsync();

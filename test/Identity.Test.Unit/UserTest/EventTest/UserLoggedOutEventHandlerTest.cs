@@ -9,6 +9,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.EventTest;
 
@@ -27,7 +28,7 @@ public class UserLoggedOutEventHandlerTest
     public async Task Handle_Given_Device_Should_Publish_Its_Connection_Id()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "account-key");
+        var user = new User(Guid.NewGuid(), "account-key", UserTags.New());
         var device = new Device(Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);

@@ -4,6 +4,7 @@ using Identity.Application.Contracts.Repository;
 using Identity.Application.Features.User.Queries.GetAccountKey;
 using Identity.Domain.Aggregates;
 using Identity.Domain.Common;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.QueryTest.GetAccountKeyTest;
 
@@ -21,7 +22,7 @@ public class GetAccountKeyQueryHandlerTest
     public async Task Handle_Given_Existing_User_Should_Return_The_Account_Public_Key()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), "account-key");
+        var user = new User(Guid.NewGuid(), "account-key", UserTags.New());
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserSpec>._, A<CancellationToken>._)).Returns(user);
 
         // Act

@@ -15,6 +15,7 @@ using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.DeviceTest.CommandTest.ApproveLinkTest;
 
@@ -31,7 +32,7 @@ public class ApproveLinkCommandHandlerTest
     private readonly IChatClientService _fakeClient = A.Fake<IChatClientService>();
     private readonly ApproveLinkCommandHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), AccountKey);
+    private readonly User _user = new(Guid.NewGuid(), AccountKey, UserTags.New());
     private readonly Device _approver;
     private readonly PendingLink _pending;
 

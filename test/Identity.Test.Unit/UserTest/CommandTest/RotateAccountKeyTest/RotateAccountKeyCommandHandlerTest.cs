@@ -11,6 +11,7 @@ using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.CommandTest.RotateAccountKeyTest;
 
@@ -26,7 +27,7 @@ public class RotateAccountKeyCommandHandlerTest
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
     private readonly RotateAccountKeyCommandHandler _sut;
 
-    private readonly User _user = new(Guid.NewGuid(), OldKey);
+    private readonly User _user = new(Guid.NewGuid(), OldKey, UserTags.New());
     private readonly Device _device;
 
     public RotateAccountKeyCommandHandlerTest()
@@ -144,7 +145,7 @@ public class RotateAccountKeyCommandHandlerTest
     public async Task Handle_Given_Key_Already_In_Use_Should_Fail_Generically()
     {
         // Arrange
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns(new User(Guid.NewGuid(), NewKey));
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns(new User(Guid.NewGuid(), NewKey, UserTags.New()));
 
         // Act
         var result = await _sut.Handle(Command(), CancellationToken.None);

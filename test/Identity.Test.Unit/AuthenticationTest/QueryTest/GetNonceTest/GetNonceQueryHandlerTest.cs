@@ -9,6 +9,7 @@ using Identity.Domain.Common;
 using Identity.Domain.Entities;
 using Identity.Domain.Enums;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.AuthenticationTest.QueryTest.GetNonceTest;
 
@@ -31,7 +32,7 @@ public class GetNonceQueryHandlerTest
     public async void Handle_Given_Valid_Query_Should_Return_Nonce()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         user.AddDevice(device);
 
@@ -77,7 +78,7 @@ public class GetNonceQueryHandlerTest
     public async Task Handle_Given_Unknown_Device_Should_Return_Unauthorized()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
 
         var query = new GetNonceQuery()
@@ -99,7 +100,7 @@ public class GetNonceQueryHandlerTest
     public async Task Handle_Given_Deleted_Device_Should_Still_Issue_Nonce()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         user.AddDevice(device);
         device.SetDelete();

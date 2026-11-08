@@ -25,5 +25,6 @@ public static class ApplicationExtensions
         services.AddScoped<IVerifyNonceService, VerifyNonceService>();
         services.AddScoped<IProofOfWorkService, ProofOfWorkService>();
         services.AddScoped<IChatClientService, ChatClientService>();
+        services.AddScoped<IUserTagGenerator, UserTagGenerator>();
     }
 }

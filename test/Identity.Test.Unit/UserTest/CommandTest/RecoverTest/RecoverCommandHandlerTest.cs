@@ -16,6 +16,7 @@ using Identity.Domain.Enums;
 using Identity.Domain.Events.User;
 using Identity.Domain.Services.User;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.CommandTest.RecoverTest;
 
@@ -34,7 +35,7 @@ public class RecoverCommandHandlerTest
     private readonly RecoverCommandHandler _sut;
 
     private readonly RecoveryChallenge _challenge = RecoveryChallenge.Create(AccountKey);
-    private readonly User _user = new(Guid.NewGuid(), AccountKey);
+    private readonly User _user = new(Guid.NewGuid(), AccountKey, UserTags.New());
 
     public RecoverCommandHandlerTest()
     {

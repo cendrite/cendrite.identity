@@ -11,6 +11,7 @@ using Identity.Test.Integration.Setup;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.DeviceTest.ConsumerTest;
 
@@ -28,8 +29,8 @@ public class ConnectionIdsConsumerTest : IntegrationTestBase
     public async Task Consume_Given_Stored_Users_Should_Respond_With_Each_Users_Active_Connection_Ids()
     {
         // Arrange
-        var alice = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var bob = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var alice = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
+        var bob = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         var aliceDevice = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, alice.Id);
         var bobDevice = new Device(Guid.NewGuid(), "key-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
         var bobDeleted = new Device(Guid.NewGuid(), "key-3", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);

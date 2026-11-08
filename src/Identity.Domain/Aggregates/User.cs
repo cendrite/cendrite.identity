@@ -6,6 +6,7 @@ namespace Identity.Domain.Aggregates;
 public class User : AggregateRoot
 {
     public string AccountPublicKey { get; private set; } = null!;
+    public string UserTag { get; private init; } = null!;
     private readonly List<Device> _devices = [];
     private readonly List<AccountKeyRotation> _accountKeyRotations = [];
 
@@ -14,9 +15,10 @@ public class User : AggregateRoot
 
     public User() : base(Guid.Empty) { } // For EF Core
 
-    public User(Guid id, string accountPublicKey) : base(id)
+    public User(Guid id, string accountPublicKey, string userTag) : base(id)
     {
         AccountPublicKey = accountPublicKey;
+        UserTag = userTag;
     }
 
     /// <summary>

@@ -198,7 +198,7 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
 
     private async Task<User> SaveUser(KeyPair account, bool withExistingDevice = false)
     {
-        var user = new User(Guid.NewGuid(), account.PublicKey);
+        var user = new User(Guid.NewGuid(), account.PublicKey, UserTags.New());
         if (withExistingDevice)
             user.AddDevice(new Device(Guid.NewGuid(), new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id));
         Db.User.Add(user);

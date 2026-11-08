@@ -18,11 +18,13 @@ using Identity.Domain.Enums;
 using Identity.Domain.Services.User;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Unit.Setup.Helpers;
 
 namespace Identity.Test.Unit.UserTest.CommandTest.SignupTest;
 
 public class SignupCommandHandlerTest
 {
+    private const string Tag = "482177301593";
     private static readonly Error SignupFailed = Errors.General.UnspecifiedError("Signup failed");
     private static readonly string AccountKey = Convert.ToBase64String(Enumerable.Repeat((byte)1, 32).ToArray());
     private static readonly string DeviceKey = Convert.ToBase64String(Enumerable.Repeat((byte)2, 32).ToArray());
@@ -35,6 +37,7 @@ public class SignupCommandHandlerTest
     private readonly IUnitOfWork _fakeUnitOfWork = A.Fake<IUnitOfWork>();
     private readonly IRequestClient<CreateUserProfileMessage> _fakeProfileClient = A.Fake<IRequestClient<CreateUserProfileMessage>>();
     private readonly IChatClientService _fakeClientClient = A.Fake<IChatClientService>();
+    private readonly IUserTagGenerator _fakeTagGenerator = A.Fake<IUserTagGenerator>();
     private readonly SignupCommandHandler _sut;
 
     private readonly SignupChallenge _challenge = SignupChallenge.Create(20, TimeSpan.FromMinutes(5));
@@ -42,13 +45,15 @@ public class SignupCommandHandlerTest
     public SignupCommandHandlerTest()
     {
         _sut = new SignupCommandHandler(_fakeRepo, _fakeCache, _fakeProofOfWork, _fakeVerifier, _fakeDeviceService, _fakeUnitOfWork,
-            _fakeProfileClient, _fakeClientClient, A.Fake<ILogger<SignupCommandHandler>>());
+            _fakeProfileClient, _fakeClientClient, _fakeTagGenerator, A.Fake<ILogger<SignupCommandHandler>>());
 
         A.CallTo(() => _fakeCache.GetChallengeAsync(_challenge.Id, A<CancellationToken>._)).Returns(_challenge);
         A.CallTo(() => _fakeCache.TryClaimChallengeAsync(_challenge.Id, A<CancellationToken>._)).Returns(true);
         A.CallTo(() => _fakeProofOfWork.IsSolved(A<byte[]>._, A<ulong>._, A<int>._)).Returns(true);
         A.CallTo(() => _fakeVerifier.VerifyNonce(A<string>._, A<string>._, A<string>._)).Returns(true);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns((User?)null);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByTagSpec>._, A<CancellationToken>._)).Returns((User?)null);
+        A.CallTo(() => _fakeTagGenerator.Generate()).Returns(Tag);
         A.CallTo(() => _fakeDeviceService.RegisterDevice(A<User>._, A<string>._, A<string>._, A<string>._, A<DeviceType>._, A<DevicePlatform>._, A<string?>._, A<string?>._))
             .ReturnsLazily((User user, string key, string signal, string version, DeviceType type, DevicePlatform platform, string? approvedBy, string? approval) =>
                 new Device(Guid.NewGuid(), key, signal, version, type, platform, user.Id, approvedBy, approval));
@@ -170,7 +175,7 @@ public class SignupCommandHandlerTest
     public async Task Handle_Given_Existing_Account_Key_Should_Fail_Generically()
     {
         // Arrange
-        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns(new User(Guid.NewGuid(), AccountKey));
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByAccountKeySpec>._, A<CancellationToken>._)).Returns(new User(Guid.NewGuid(), AccountKey, UserTags.New()));
 
         // Act
         var result = await _sut.Handle(Command(), CancellationToken.None);
@@ -208,5 +213,48 @@ public class SignupCommandHandlerTest
         // Assert
         result.Error.Should().BeEquivalentTo(SignupFailed);
         A.CallTo(() => _fakeUnitOfWork.SaveChangesAsync(A<CancellationToken>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Handle_Should_Store_The_Generated_Tag_And_Send_It_With_The_Profile()
+    {
+        // Act
+        await _sut.Handle(Command(), CancellationToken.None);
+
+        // Assert
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.That.Matches(u => u.UserTag == Tag), A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fakeProfileClient.GetResponse<CreateUserProfileResponse>(
+                A<CreateUserProfileMessage>.That.Matches(m => m.UserTag == Tag && m.Username == "validUser"), A<CancellationToken>._, A<RequestTimeout>._))
+            .MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Handle_Should_Draw_A_New_Tag_When_The_First_Is_Taken()
+    {
+        // Arrange
+        A.CallTo(() => _fakeTagGenerator.Generate()).ReturnsNextFromSequence("111111111111", Tag);
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByTagSpec>._, A<CancellationToken>._))
+            .ReturnsNextFromSequence(new User(Guid.NewGuid(), AccountKey, "111111111111"), null);
+
+        // Act
+        var result = await _sut.Handle(Command(), CancellationToken.None);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>.That.Matches(u => u.UserTag == Tag), A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Handle_When_No_Free_Tag_Is_Found_Should_Fail_Without_Creating_The_User()
+    {
+        // Arrange
+        A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserByTagSpec>._, A<CancellationToken>._)).Returns(new User(Guid.NewGuid(), AccountKey, Tag));
+
+        // Act
+        var result = await _sut.Handle(Command(), CancellationToken.None);
+
+        // Assert
+        result.Error.Should().BeEquivalentTo(SignupFailed);
+        A.CallTo(() => _fakeRepo.CreateAsync(A<User>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 }

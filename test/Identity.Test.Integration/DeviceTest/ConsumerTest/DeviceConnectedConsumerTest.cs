@@ -13,6 +13,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.DeviceTest.ConsumerTest;
 
@@ -32,7 +33,7 @@ public class DeviceConnectedConsumerTest : IntegrationTestBase
     public async Task Handle_Given_Valid_Context_Should_Update_Device_LastSeen()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         var device = new Device(Guid.NewGuid(), "test", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 
@@ -58,7 +59,7 @@ public class DeviceConnectedConsumerTest : IntegrationTestBase
     public async Task Handle_Given_Throws_Exception_Should_Not_Update_Device()
     {
         //Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
 
         var device = new Device(Guid.NewGuid(), "test", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Windows, user.Id);
 

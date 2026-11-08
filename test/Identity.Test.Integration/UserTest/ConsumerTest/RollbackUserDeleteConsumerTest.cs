@@ -13,6 +13,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Identity.Test.Integration.Setup.Helpers;
 
 namespace Identity.Test.Integration.UserTest.ConsumerTest;
 
@@ -33,7 +34,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
     public async Task Consume_Valid_Message_Should_Revert_SoftDelete()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         user.SetDelete();
         await Db.User.AddAsync(user);
         await Db.SaveChangesAsync();
@@ -57,7 +58,7 @@ public class RollbackUserDeleteConsumerTest : IntegrationTestBase
     public async Task Consume_Invalid_Message_Should_Not_Revert_SoftDelete()
     {
         // Arrange
-        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
+        var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"), UserTags.New());
         user.SetDelete();
         await Db.User.AddAsync(user);
         await Db.SaveChangesAsync();
