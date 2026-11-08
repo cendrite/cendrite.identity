@@ -8,6 +8,7 @@ using Identity.Application.Features.Device.Commands.Rename;
 using Identity.Application.Features.Device.Queries.GetLinkStatus;
 using Identity.Application.Features.Device.Queries.GetPendingLink;
 using Identity.Application.Features.Device.Queries.GetConnectionIdByUser;
+using Identity.Application.Features.Device.Queries.GetDeviceChain;
 using Identity.Application.Features.Device.Queries.GetDevices;
 using Identity.Application.Features.User.Commands.Delete;
 using Identity.Application.Features.User.Commands.Recover;
@@ -81,6 +82,17 @@ internal sealed class UserEndpoints : IEndpoint
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
+        group.MapGet("/device-chain", async ([FromQuery] Guid connectionId, ISender sender) =>
+            {
+                var result = await sender.Send(new GetDeviceChainQuery { ConnectionId = connectionId });
+                return result.Success ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .RequireAuthorization()
+            .Produces<DeviceChainDto>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/devices", async (ISender sender, HttpContext ctx) =>
             {
