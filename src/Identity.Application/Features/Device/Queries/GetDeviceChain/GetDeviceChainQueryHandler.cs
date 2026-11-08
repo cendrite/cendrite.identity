@@ -22,6 +22,6 @@ public sealed class GetDeviceChainQueryHandler(IUserRepository userRepository) :
             .Select(r => new ChainRotationDto(r.DeviceId, r.OldAccountPublicKey, r.NewAccountPublicKey, r.Proof, r.Approval, r.Created))
             .ToList();
 
-        return Result.Ok(new DeviceChainDto(user.Id, user.AccountPublicKey, devices, rotations));
+        return Result.Ok(new DeviceChainDto(user.UserTag, user.AccountPublicKey, devices, rotations));
     }
 }
