@@ -40,7 +40,7 @@ public class GetDeviceChainQueryHandlerTest : IntegrationTestBase
         var result = await _sut.Handle(new GetDeviceChainQuery { ConnectionId = phone.ConnectionId }, CancellationToken.None);
 
         // Assert
-        result.Value!.UserId.Should().Be(user.Id);
+        result.Value!.UserTag.Should().Be(user.UserTag);
         result.Value.AccountPublicKey.Should().Be(user.AccountPublicKey);
         result.Value.Devices.Should().HaveCount(2);
         result.Value.Devices.Single(d => d.Id == phone.Id).SignalIdentityKey.Should().Be(signal);

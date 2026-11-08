@@ -36,7 +36,7 @@ public class GetDeviceChainQueryHandlerTest
         var result = await _sut.Handle(new GetDeviceChainQuery { ConnectionId = laptop.ConnectionId }, CancellationToken.None);
 
         // Assert
-        result.Value!.UserId.Should().Be(user.Id);
+        result.Value!.UserTag.Should().Be(user.UserTag);
         result.Value.AccountPublicKey.Should().Be("key-a");
         result.Value.Devices.Should().BeEquivalentTo(new[]
         {
