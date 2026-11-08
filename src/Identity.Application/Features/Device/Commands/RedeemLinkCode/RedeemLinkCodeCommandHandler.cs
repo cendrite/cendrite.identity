@@ -39,6 +39,7 @@ public sealed class RedeemLinkCodeCommandHandler(
             user.Id,
             issuingDevice.Id,
             cmd.DevicePublicKey,
+            cmd.SignalIdentityKey,
             cmd.DeviceAppVersion,
             cmd.DeviceType,
             cmd.DevicePlatform,

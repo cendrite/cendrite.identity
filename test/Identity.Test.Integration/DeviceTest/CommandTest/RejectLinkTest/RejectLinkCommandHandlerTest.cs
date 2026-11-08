@@ -51,7 +51,7 @@ public class RejectLinkCommandHandlerTest : IntegrationTestBase
 
     private async Task<PendingLink> AddPending()
     {
-        var pending = new PendingLink(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), new KeyPair().PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        var pending = new PendingLink(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             "poll-secret-hash", DateTime.UtcNow.AddMinutes(5));
         await _cache.SetPendingAsync(pending, CancellationToken.None);
         return pending;

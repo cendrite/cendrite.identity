@@ -17,7 +17,7 @@ public class DeviceServiceTest
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
 
         // Act
-        var result = _sut.RegisterDevice(user, "publicKey", "1.0.0", DeviceType.Mobile, DevicePlatform.iOS, null, null);
+        var result = _sut.RegisterDevice(user, "publicKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0.0", DeviceType.Mobile, DevicePlatform.iOS, null, null);
 
         // Assert
         result.Should().NotBeNull();

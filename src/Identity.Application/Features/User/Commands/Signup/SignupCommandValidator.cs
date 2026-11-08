@@ -24,6 +24,9 @@ public class SignupCommandValidator : AbstractValidator<SignupCommand>
         RuleFor(x => x.DevicePublicKey)
             .MustBePublicKey().WithMessage(Errors.General.UnexpectedValue(nameof(SignupCommand.DevicePublicKey)).Description);
 
+        RuleFor(x => x.SignalIdentityKey)
+            .MustBeSignalIdentityKey().WithMessage(Errors.General.UnexpectedValue(nameof(SignupCommand.SignalIdentityKey)).Description);
+
         RuleFor(x => x.ChallengeSignature)
             .MustBeSignature().WithMessage(Errors.General.UnexpectedValue(nameof(SignupCommand.ChallengeSignature)).Description);
 

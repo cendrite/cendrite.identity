@@ -26,7 +26,7 @@ public class DeleteDeviceCommandHandlerTest
     {
         _sut = new DeleteDeviceCommandHandler(_fakeRepo, _fakeAuthenticationService, A.Fake<ILogger<DeleteDeviceCommandHandler>>(), _fakeUnitOfWork);
 
-        _device = new Device(Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
+        _device = new Device(Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
         _user.AddDevice(_device);
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(_user);

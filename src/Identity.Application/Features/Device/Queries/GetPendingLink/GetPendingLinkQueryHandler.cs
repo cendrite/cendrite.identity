@@ -21,6 +21,6 @@ public sealed class GetPendingLinkQueryHandler(
         if (user is null)
             return Result.Fail<PendingLinkDto>(Errors.General.NotFound(q.UserId));
 
-        return Result.Ok(new PendingLinkDto(pending.Id, pending.DevicePublicKey, pending.DevicePlatform.ToString(), user.AccountPublicKey, pending.ExpiresAt));
+        return Result.Ok(new PendingLinkDto(pending.Id, pending.DevicePublicKey, pending.SignalIdentityKey, pending.DevicePlatform.ToString(), user.AccountPublicKey, pending.ExpiresAt));
     }
 }

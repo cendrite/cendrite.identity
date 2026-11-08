@@ -16,6 +16,7 @@ public class RecoverCommandValidatorTest
         ChallengeId = Guid.NewGuid(),
         ChallengeSignature = Base64(64),
         DevicePublicKey = Base64(32),
+        SignalIdentityKey = "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         DeviceApproval = Base64(64),
         DeviceAppVersion = "1.0",
         DeviceType = DeviceType.Desktop,
@@ -43,5 +44,13 @@ public class RecoverCommandValidatorTest
         _sut.Validate(ValidCommand() with { ChallengeId = Guid.Empty }).IsValid.Should().BeFalse();
         _sut.Validate(ValidCommand() with { DeviceAppVersion = "1.0.0" }).IsValid.Should().BeFalse();
         _sut.Validate(ValidCommand() with { DevicePlatform = (DevicePlatform)99 }).IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Validate_Given_Bad_Signal_Identity_Key_Should_Fail()
+    {
+        _sut.Validate(ValidCommand() with { SignalIdentityKey = Convert.ToBase64String(new byte[33]) }).IsValid.Should().BeFalse();
+        _sut.Validate(ValidCommand() with { SignalIdentityKey = Convert.ToBase64String(new byte[32]) }).IsValid.Should().BeFalse();
+        _sut.Validate(ValidCommand() with { SignalIdentityKey = "not base64!" }).IsValid.Should().BeFalse();
     }
 }

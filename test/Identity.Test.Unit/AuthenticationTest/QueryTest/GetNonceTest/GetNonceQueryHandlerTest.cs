@@ -32,7 +32,7 @@ public class GetNonceQueryHandlerTest
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), "SomeKey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
+        var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         user.AddDevice(device);
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);
@@ -100,7 +100,7 @@ public class GetNonceQueryHandlerTest
     {
         // Arrange
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), "SomeKey", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
+        var device = new Device(Guid.NewGuid(), "SomeKey", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Android, user.Id);
         user.AddDevice(device);
         device.SetDelete();
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);

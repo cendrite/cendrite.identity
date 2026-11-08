@@ -21,7 +21,7 @@ public class SignedMessagesTest
         SignedMessages.Auth(a).Should().Be(Expected("cendrite-auth-v1", KeyA));
         SignedMessages.SignupChallenge(a).Should().Be(Expected("cendrite-signup-v1", KeyA));
         SignedMessages.RecoveryChallenge(a).Should().Be(Expected("cendrite-recovery-v1", KeyA));
-        SignedMessages.DeviceApproval(a, b).Should().Be(Expected("device-approval-v1", KeyA, KeyB));
+        SignedMessages.DeviceApproval(a, b, a).Should().Be(Expected("device-approval-v1", KeyA, KeyB, KeyA));
         SignedMessages.AccountRotation(a, b).Should().Be(Expected("account-rotate-v1", KeyA, KeyB));
     }
 }

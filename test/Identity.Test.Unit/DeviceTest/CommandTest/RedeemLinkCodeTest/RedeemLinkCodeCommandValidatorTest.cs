@@ -12,6 +12,7 @@ public class RedeemLinkCodeCommandValidatorTest
     {
         Code = "ABCDE-12345",
         DevicePublicKey = Convert.ToBase64String(new byte[32]),
+        SignalIdentityKey = "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         DeviceAppVersion = "1.0",
         DeviceType = DeviceType.Desktop,
         DevicePlatform = DevicePlatform.Linux,
@@ -37,5 +38,13 @@ public class RedeemLinkCodeCommandValidatorTest
         _sut.Validate(ValidCommand() with { DevicePublicKey = Convert.ToBase64String(new byte[33]) }).IsValid.Should().BeFalse();
         _sut.Validate(ValidCommand() with { DeviceAppVersion = "1.0.0" }).IsValid.Should().BeFalse();
         _sut.Validate(ValidCommand() with { DevicePlatform = (DevicePlatform)99 }).IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Validate_Given_Bad_Signal_Identity_Key_Should_Fail()
+    {
+        _sut.Validate(ValidCommand() with { SignalIdentityKey = Convert.ToBase64String(new byte[33]) }).IsValid.Should().BeFalse();
+        _sut.Validate(ValidCommand() with { SignalIdentityKey = Convert.ToBase64String(new byte[32]) }).IsValid.Should().BeFalse();
+        _sut.Validate(ValidCommand() with { SignalIdentityKey = "not base64!" }).IsValid.Should().BeFalse();
     }
 }

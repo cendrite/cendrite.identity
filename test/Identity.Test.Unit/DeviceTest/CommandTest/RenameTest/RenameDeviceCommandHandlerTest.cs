@@ -22,7 +22,7 @@ public class RenameDeviceCommandHandlerTest
     public RenameDeviceCommandHandlerTest()
     {
         _sut = new RenameDeviceCommandHandler(_fakeRepo, _fakeUnitOfWork, A.Fake<ILogger<RenameDeviceCommandHandler>>());
-        _device = new Device(Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
+        _device = new Device(Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, _user.Id);
         _user.AddDevice(_device);
 
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(_user);

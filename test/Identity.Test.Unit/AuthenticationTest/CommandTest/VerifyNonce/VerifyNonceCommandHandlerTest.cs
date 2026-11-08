@@ -42,7 +42,7 @@ public class VerifyNonceCommandHandlerTest
     private static (User user, Device device) CreateUserWithDevice()
     {
         var user = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var device = new Device(Guid.NewGuid(), "doesntmatter", "1.0", DeviceType.Desktop,
+        var device = new Device(Guid.NewGuid(), "doesntmatter", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop,
             DevicePlatform.Windows, user.Id);
         user.AddDevice(device);
         return (user, device);

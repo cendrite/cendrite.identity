@@ -34,7 +34,7 @@ public sealed class ApproveLinkCommandHandler(
         if (user is null || approver is null)
             return Result.Fail(Errors.General.Unauthorized());
 
-        if (!IsApprovalValid(user.AccountPublicKey, pending.DevicePublicKey, cmd.Approval, approver.PublicKey))
+        if (!IsApprovalValid(user.AccountPublicKey, pending.DevicePublicKey, pending.SignalIdentityKey, cmd.Approval, approver.PublicKey))
         {
             logger.LogWarning("Device {DeviceId} sent an invalid approval for pending link {PendingLinkId}", approver.Id, pending.Id);
             return Result.Fail(Errors.General.Unauthorized());
@@ -43,7 +43,7 @@ public sealed class ApproveLinkCommandHandler(
         if (await deviceLinkCache.TryClaimDecisionAsync(pending.Id, ct) is false)
             return Result.Fail(Errors.General.NotFound(cmd.PendingLinkId));
 
-        var device = deviceService.RegisterDevice(user, pending.DevicePublicKey, pending.DeviceAppVersion, pending.DeviceType, pending.DevicePlatform, approver.Id.ToString(), cmd.Approval);
+        var device = deviceService.RegisterDevice(user, pending.DevicePublicKey, pending.SignalIdentityKey, pending.DeviceAppVersion, pending.DeviceType, pending.DevicePlatform, approver.Id.ToString(), cmd.Approval);
 
         var createClientResult = await chatClientService.CreateClientAsync(user.Id, device.Id, device.ConnectionId, ct);
         if (createClientResult.Success is false)
@@ -65,8 +65,8 @@ public sealed class ApproveLinkCommandHandler(
         return Result.Ok();
     }
 
-    private bool IsApprovalValid(string accountPublicKey, string devicePublicKey, string approval, string approverPublicKey)
+    private bool IsApprovalValid(string accountPublicKey, string devicePublicKey, string signalIdentityKey, string approval, string approverPublicKey)
     {
-        return signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(accountPublicKey, devicePublicKey), approval, approverPublicKey);
+        return signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(accountPublicKey, devicePublicKey, signalIdentityKey), approval, approverPublicKey);
     }
 }

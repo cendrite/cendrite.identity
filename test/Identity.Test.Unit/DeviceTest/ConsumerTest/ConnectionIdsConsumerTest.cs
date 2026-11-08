@@ -20,8 +20,8 @@ public class ConnectionIdsConsumerTest
         // Arrange
         var alice = new User(Guid.NewGuid(), "key-a");
         var bob = new User(Guid.NewGuid(), "key-b");
-        var aliceDevice = new Device(Guid.NewGuid(), "d-1", "1.0", DeviceType.Desktop, DevicePlatform.Linux, alice.Id);
-        var bobDevice = new Device(Guid.NewGuid(), "d-2", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
+        var aliceDevice = new Device(Guid.NewGuid(), "d-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, alice.Id);
+        var bobDevice = new Device(Guid.NewGuid(), "d-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
         alice.AddDevice(aliceDevice);
         bob.AddDevice(bobDevice);
 

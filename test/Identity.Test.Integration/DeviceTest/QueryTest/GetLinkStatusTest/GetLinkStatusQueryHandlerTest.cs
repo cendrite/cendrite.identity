@@ -57,7 +57,7 @@ public class GetLinkStatusQueryHandlerTest : IntegrationTestBase
 
     private async Task<PendingLink> AddPending(byte[] secret, PendingLinkStatus status, Guid? deviceId, Guid? connectionId)
     {
-        var pending = new PendingLink(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), new KeyPair().PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        var pending = new PendingLink(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             Convert.ToBase64String(SHA256.HashData(secret)), DateTime.UtcNow.AddMinutes(5), status, deviceId, connectionId);
         await _cache.SetPendingAsync(pending, CancellationToken.None);
         return pending;

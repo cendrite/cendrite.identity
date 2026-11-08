@@ -22,7 +22,7 @@ public class GetLinkStatusQueryHandlerTest
     public GetLinkStatusQueryHandlerTest()
     {
         _sut = new GetLinkStatusQueryHandler(_fakeCache, _fakeRateLimiter);
-        _pending = new PendingLink(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        _pending = new PendingLink(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             Convert.ToBase64String(SHA256.HashData(_secret)), DateTime.UtcNow.AddMinutes(5));
 
         A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(true);

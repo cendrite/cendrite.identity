@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
@@ -19,9 +20,13 @@ public sealed class KeyPair
         return Convert.ToBase64String(signer.GenerateSignature());
     }
 
-    public string SignDeviceApproval(string accountPublicKey, string devicePublicKey) =>
+    public string SignDeviceApproval(string accountPublicKey, string devicePublicKey, string signalIdentityKey) =>
         Sign([
             .. Encoding.ASCII.GetBytes("device-approval-v1"),
             .. Convert.FromBase64String(accountPublicKey),
-            .. Convert.FromBase64String(devicePublicKey)]);
+            .. Convert.FromBase64String(devicePublicKey),
+            .. Convert.FromBase64String(signalIdentityKey)]);
+
+    public static string NewSignalIdentityKey() =>
+        Convert.ToBase64String([0x05, .. RandomNumberGenerator.GetBytes(32)]);
 }

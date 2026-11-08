@@ -111,7 +111,7 @@ public class RotateAccountKeyCommandHandlerTest : IntegrationTestBase
     {
         var user = new User(Guid.NewGuid(), account.PublicKey);
         var key = new KeyPair();
-        var device = new Device(Guid.NewGuid(), key.PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var device = new Device(Guid.NewGuid(), key.PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         Db.User.Add(user);
         await Db.SaveChangesAsync();

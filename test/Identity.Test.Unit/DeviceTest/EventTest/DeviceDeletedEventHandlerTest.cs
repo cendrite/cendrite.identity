@@ -28,7 +28,7 @@ public class DeviceDeletedEventHandlerTest
     {
         // Arrange
         var user = new User(Guid.NewGuid(), "account-key");
-        var device = new Device(Guid.NewGuid(), "device-key", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var device = new Device(Guid.NewGuid(), "device-key", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         device.SetDelete();
         user.AddDevice(device);
         A.CallTo(() => _fakeRepo.GetSinleAsync(A<UserWithDevicesSpec>._, A<CancellationToken>._)).Returns(user);

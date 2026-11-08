@@ -58,7 +58,7 @@ public class GetPendingLinkQueryHandlerTest : IntegrationTestBase
 
     private async Task<PendingLink> AddPending(User user, Device issuer)
     {
-        var pending = new PendingLink(Guid.NewGuid(), user.Id, issuer.Id, new KeyPair().PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        var pending = new PendingLink(Guid.NewGuid(), user.Id, issuer.Id, new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             "poll-secret-hash", DateTime.UtcNow.AddMinutes(5));
         await _cache.SetPendingAsync(pending, CancellationToken.None);
         return pending;
@@ -67,7 +67,7 @@ public class GetPendingLinkQueryHandlerTest : IntegrationTestBase
     private async Task<(User, Device)> SaveUserWithDevice()
     {
         var user = new User(Guid.NewGuid(), new KeyPair().PublicKey);
-        var device = new Device(Guid.NewGuid(), new KeyPair().PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var device = new Device(Guid.NewGuid(), new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         Db.User.Add(user);
         await Db.SaveChangesAsync();

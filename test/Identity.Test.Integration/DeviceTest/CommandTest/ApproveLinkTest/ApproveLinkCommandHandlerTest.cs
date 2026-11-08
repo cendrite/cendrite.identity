@@ -44,7 +44,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
         var (user, issuer, issuerKey) = await SaveUserWithDevice();
         var newDevice = new KeyPair();
         var pending = await AddPending(user, issuer, newDevice);
-        var approval = issuerKey.SignDeviceApproval(user.AccountPublicKey, newDevice.PublicKey);
+        var approval = issuerKey.SignDeviceApproval(user.AccountPublicKey, newDevice.PublicKey, pending.SignalIdentityKey);
 
         // Act
         var result = await _sut.Handle(Command(user, issuer, pending, approval), CancellationToken.None);
@@ -57,6 +57,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
         Db.ChangeTracker.Clear();
         var created = Db.Device.Single(d => d.Id == approved.DeviceId);
         created.PublicKey.Should().Be(newDevice.PublicKey);
+        created.SignalIdentityKey.Should().Be(pending.SignalIdentityKey);
         created.ApprovedBy.Should().Be(issuer.Id.ToString());
         created.ApprovalSignature.Should().Be(approval);
         Db.OutboxMessage.Should().Contain(m => m.Type.Contains(nameof(DeviceAddedEvent)));
@@ -69,7 +70,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
         var (user, issuer, _) = await SaveUserWithDevice();
         var newDevice = new KeyPair();
         var pending = await AddPending(user, issuer, newDevice);
-        var forged = new KeyPair().SignDeviceApproval(user.AccountPublicKey, newDevice.PublicKey);
+        var forged = new KeyPair().SignDeviceApproval(user.AccountPublicKey, newDevice.PublicKey, pending.SignalIdentityKey);
 
         // Act
         var result = await _sut.Handle(Command(user, issuer, pending, forged), CancellationToken.None);
@@ -86,7 +87,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
         var (user, issuer, issuerKey) = await SaveUserWithDevice();
         var newDevice = new KeyPair();
         var pending = await AddPending(user, issuer, newDevice, PendingLinkStatus.Rejected);
-        var approval = issuerKey.SignDeviceApproval(user.AccountPublicKey, newDevice.PublicKey);
+        var approval = issuerKey.SignDeviceApproval(user.AccountPublicKey, newDevice.PublicKey, pending.SignalIdentityKey);
 
         // Act
         var result = await _sut.Handle(Command(user, issuer, pending, approval), CancellationToken.None);
@@ -106,7 +107,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
 
     private async Task<PendingLink> AddPending(User user, Device issuer, KeyPair device, PendingLinkStatus status = PendingLinkStatus.Pending)
     {
-        var pending = new PendingLink(Guid.NewGuid(), user.Id, issuer.Id, device.PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux,
+        var pending = new PendingLink(Guid.NewGuid(), user.Id, issuer.Id, device.PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux,
             "poll-secret-hash", DateTime.UtcNow.AddMinutes(5), status);
         await _cache.SetPendingAsync(pending, CancellationToken.None);
         return pending;
@@ -116,7 +117,7 @@ public class ApproveLinkCommandHandlerTest : IntegrationTestBase
     {
         var user = new User(Guid.NewGuid(), new KeyPair().PublicKey);
         var key = new KeyPair();
-        var device = new Device(Guid.NewGuid(), key.PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
+        var device = new Device(Guid.NewGuid(), key.PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id);
         user.AddDevice(device);
         Db.User.Add(user);
         await Db.SaveChangesAsync();

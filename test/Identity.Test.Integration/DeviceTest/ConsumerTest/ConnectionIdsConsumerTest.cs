@@ -30,9 +30,9 @@ public class ConnectionIdsConsumerTest : IntegrationTestBase
         // Arrange
         var alice = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
         var bob = new User(Guid.NewGuid(), Guid.NewGuid().ToString("N"));
-        var aliceDevice = new Device(Guid.NewGuid(), "key-1", "1.0", DeviceType.Desktop, DevicePlatform.Linux, alice.Id);
-        var bobDevice = new Device(Guid.NewGuid(), "key-2", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
-        var bobDeleted = new Device(Guid.NewGuid(), "key-3", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
+        var aliceDevice = new Device(Guid.NewGuid(), "key-1", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, alice.Id);
+        var bobDevice = new Device(Guid.NewGuid(), "key-2", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
+        var bobDeleted = new Device(Guid.NewGuid(), "key-3", "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, bob.Id);
         bobDeleted.SetDelete();
         alice.AddDevice(aliceDevice);
         bob.AddDevice(bobDevice);

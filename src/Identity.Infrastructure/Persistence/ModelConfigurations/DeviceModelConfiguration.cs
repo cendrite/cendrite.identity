@@ -33,6 +33,11 @@ public class DeviceModelConfiguration : BaseModelConfiguration<Device>
             .HasColumnName("public_key")
             .IsRequired();
 
+        builder.Property(d => d.SignalIdentityKey)
+            .HasColumnName("signal_identity_key")
+            .IsRequired()
+            .HasMaxLength(64);
+
         builder.Property(d => d.Type)
             .HasConversion<string>()
             .HasColumnName("type")

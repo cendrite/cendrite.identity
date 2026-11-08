@@ -41,7 +41,7 @@ public sealed class SignupCommandHandler(
             return Result.Fail<SignupDto>(SignupFailed);
 
         var user = new Domain.Aggregates.User(Guid.NewGuid(), cmd.AccountPublicKey);
-        var device = deviceService.RegisterDevice(user, cmd.DevicePublicKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, DeviceConstants.ApprovedByAccount, cmd.DeviceApproval);
+        var device = deviceService.RegisterDevice(user, cmd.DevicePublicKey, cmd.SignalIdentityKey, cmd.DeviceAppVersion, cmd.DeviceType, cmd.DevicePlatform, DeviceConstants.ApprovedByAccount, cmd.DeviceApproval);
 
         await userRepository.CreateAsync(user, ct);
 
@@ -89,7 +89,7 @@ public sealed class SignupCommandHandler(
     private bool AreSignaturesValid(SignupChallenge challenge, SignupCommand cmd)
     {
         var valid = signatureVerifier.VerifyNonce(SignedMessages.SignupChallenge(challenge.ChallengeValue), cmd.ChallengeSignature, cmd.AccountPublicKey)
-                    && signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(cmd.AccountPublicKey, cmd.DevicePublicKey), cmd.DeviceApproval, cmd.AccountPublicKey);
+                    && signatureVerifier.VerifyNonce(SignedMessages.DeviceApproval(cmd.AccountPublicKey, cmd.DevicePublicKey, cmd.SignalIdentityKey), cmd.DeviceApproval, cmd.AccountPublicKey);
         if (!valid)
             logger.LogWarning("Signup challenge {ChallengeId} has an invalid signature", challenge.Id);
 

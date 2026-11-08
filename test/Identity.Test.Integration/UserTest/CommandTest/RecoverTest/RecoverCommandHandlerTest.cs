@@ -68,6 +68,7 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
         devices.Should().HaveCount(2);
         var recovered = devices.Single(d => d.Id == result.Value.DeviceId);
         recovered.PublicKey.Should().Be(device.PublicKey);
+        recovered.SignalIdentityKey.Should().Be(cmd.SignalIdentityKey);
         recovered.ConnectionId.Should().Be(result.Value.DeviceConnectionId);
         recovered.ApprovedBy.Should().Be(DeviceConstants.ApprovedByAccount);
         recovered.ApprovalSignature.Should().Be(cmd.DeviceApproval);
@@ -199,7 +200,7 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
     {
         var user = new User(Guid.NewGuid(), account.PublicKey);
         if (withExistingDevice)
-            user.AddDevice(new Device(Guid.NewGuid(), new KeyPair().PublicKey, "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id));
+            user.AddDevice(new Device(Guid.NewGuid(), new KeyPair().PublicKey, "BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1.0", DeviceType.Desktop, DevicePlatform.Linux, user.Id));
         Db.User.Add(user);
         await Db.SaveChangesAsync();
         return user;
@@ -207,6 +208,7 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
 
     private async Task<RecoverCommand> BuildCommand(KeyPair account, KeyPair device)
     {
+        var signalIdentityKey = KeyPair.NewSignalIdentityKey();
         var challenge = await _begin.Handle(new BeginRecoveryCommand { AccountPublicKey = account.PublicKey }, CancellationToken.None);
         var challengeBytes = Convert.FromBase64String(challenge.Value!.Challenge);
 
@@ -216,7 +218,8 @@ public class RecoverCommandHandlerTest : IntegrationTestBase
             ChallengeId = challenge.Value.ChallengeId,
             ChallengeSignature = account.Sign([.. Encoding.ASCII.GetBytes("cendrite-recovery-v1"), .. challengeBytes]),
             DevicePublicKey = device.PublicKey,
-            DeviceApproval = account.SignDeviceApproval(account.PublicKey, device.PublicKey),
+            SignalIdentityKey = signalIdentityKey,
+            DeviceApproval = account.SignDeviceApproval(account.PublicKey, device.PublicKey, signalIdentityKey),
             DeviceAppVersion = "1.0",
             DeviceType = DeviceType.Desktop,
             DevicePlatform = DevicePlatform.Linux,

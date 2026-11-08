@@ -20,6 +20,9 @@ public class RecoverCommandValidator : AbstractValidator<RecoverCommand>
         RuleFor(x => x.DevicePublicKey)
             .MustBePublicKey().WithMessage(Errors.General.UnexpectedValue(nameof(RecoverCommand.DevicePublicKey)).Description);
 
+        RuleFor(x => x.SignalIdentityKey)
+            .MustBeSignalIdentityKey().WithMessage(Errors.General.UnexpectedValue(nameof(RecoverCommand.SignalIdentityKey)).Description);
+
         RuleFor(x => x.ChallengeSignature)
             .MustBeSignature().WithMessage(Errors.General.UnexpectedValue(nameof(RecoverCommand.ChallengeSignature)).Description);
 

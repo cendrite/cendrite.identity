@@ -72,6 +72,7 @@ public class SignupCommandHandlerTest : IntegrationTestBase
         stored.ConnectionId.Should().Be(result.Value.DeviceConnectionId);
         stored.UserId.Should().Be(user.Id);
         stored.PublicKey.Should().Be(device.PublicKey);
+        stored.SignalIdentityKey.Should().Be(cmd.SignalIdentityKey);
         stored.Platform.Should().Be(DevicePlatform.Linux);
         stored.ApprovedBy.Should().Be(DeviceConstants.ApprovedByAccount);
         stored.ApprovalSignature.Should().Be(cmd.DeviceApproval);
@@ -187,6 +188,7 @@ public class SignupCommandHandlerTest : IntegrationTestBase
 
     private async Task<SignupCommand> BuildCommand(KeyPair account, KeyPair device)
     {
+        var signalIdentityKey = KeyPair.NewSignalIdentityKey();
         var challenge = SignupChallenge.Create(Difficulty, TimeSpan.FromMinutes(5));
         await _challengeCache.AddChallengeAsync(challenge, CancellationToken.None);
         var challengeBytes = Convert.FromBase64String(challenge.ChallengeValue);
@@ -199,7 +201,8 @@ public class SignupCommandHandlerTest : IntegrationTestBase
             PowNonce = Solve(challengeBytes),
             ChallengeSignature = account.Sign(Concat(Encoding.ASCII.GetBytes("cendrite-signup-v1"), challengeBytes)),
             DevicePublicKey = device.PublicKey,
-            DeviceApproval = account.SignDeviceApproval(account.PublicKey, device.PublicKey),
+            SignalIdentityKey = signalIdentityKey,
+            DeviceApproval = account.SignDeviceApproval(account.PublicKey, device.PublicKey, signalIdentityKey),
             DeviceAppVersion = "1.0",
             DeviceType = DeviceType.Desktop,
             DevicePlatform = DevicePlatform.Linux,
