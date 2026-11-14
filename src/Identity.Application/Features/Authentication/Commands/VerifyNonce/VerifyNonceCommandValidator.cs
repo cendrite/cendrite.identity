@@ -1,5 +1,5 @@
 ﻿using Cendrite.Domain.Common;
-using Identity.Application.Services;
+using Identity.Domain.Constants;
 using Identity.Domain.Common;
 using FluentValidation;
 
@@ -20,7 +20,7 @@ public class VerifyNonceCommandValidator : AbstractValidator<VerifyNonceCommand>
             .WithMessage(Errors.General.ValueIsEmpty(nameof(VerifyNonceCommand.Nonce)).Description);
         RuleFor(x => x.TokenRequests)
             .NotNull()
-            .Must(requests => requests.Count <= TokenIssuer.MaxTokenRequests)
-            .WithMessage($"At most {TokenIssuer.MaxTokenRequests} token requests can be sent at once.");
+            .Must(requests => requests.Count <= PrivateTokenConstants.MaxTokenRequests)
+            .WithMessage($"At most {PrivateTokenConstants.MaxTokenRequests} token requests can be sent at once.");
     }
 }

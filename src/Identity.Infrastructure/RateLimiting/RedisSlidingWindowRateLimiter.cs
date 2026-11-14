@@ -44,6 +44,45 @@ public class RedisSlidingWindowRateLimiter(IConnectionMultiplexer connectionMult
         return (long)result == 1;
     }
 
+    private const string ConsumeUpToScript = """
+                                              local key = KEYS[1]
+                                              local now = tonumber(ARGV[1])
+                                              local windowMs = tonumber(ARGV[2])
+                                              local limit = tonumber(ARGV[3])
+                                              local requested = tonumber(ARGV[4])
+                                              local member = ARGV[5]
+
+                                              redis.call('ZREMRANGEBYSCORE', key, '-inf', now - windowMs)
+
+                                              local granted = math.min(requested, limit - redis.call('ZCARD', key))
+                                              if granted <= 0 then
+                                                  return 0
+                                              end
+
+                                              for i = 1, granted do
+                                                  redis.call('ZADD', key, now, member .. '-' .. i)
+                                              end
+                                              redis.call('PEXPIRE', key, windowMs)
+                                              return granted
+                                              """;
+
+    public async Task<int> ConsumeUpToAsync(string key, int requested, int limit, TimeSpan window, CancellationToken cancellationToken)
+    {
+        if (requested <= 0) return 0;
+
+        var db = connectionMultiplexer.GetDatabase();
+
+        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var member = $"{now}-{Guid.NewGuid()}";
+
+        var result = await db.ScriptEvaluateAsync(
+            ConsumeUpToScript,
+            [(RedisKey)key],
+            [(RedisValue)now, (RedisValue)(long)window.TotalMilliseconds, (RedisValue)limit, (RedisValue)requested, (RedisValue)member]);
+
+        return (int)(long)result;
+    }
+
     public async Task ResetAsync(string key, CancellationToken cancellationToken)
     {
         await connectionMultiplexer.GetDatabase().KeyDeleteAsync(key);

@@ -77,7 +77,7 @@ public class VerifyNonceCommandValidatorTest
 
     [Theory]
     [InlineData(0)]
-    [InlineData(3)]
+    [InlineData(5)]
     public void VerifyNonceCommandValidator_WhenTokenRequestsAreWithinTheLimit_ShouldBeValid(int count)
     {
         var command = new VerifyNonceCommand
@@ -103,7 +103,7 @@ public class VerifyNonceCommandValidatorTest
             NonceId = Guid.NewGuid(),
             DeviceId = Guid.NewGuid(),
             Nonce = "nonce",
-            TokenRequests = ["1", "2", "3", "4"],
+            TokenRequests = ["1", "2", "3", "4", "5", "6"],
         };
 
         var result = _validator.Validate(command);
