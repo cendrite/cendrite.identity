@@ -26,7 +26,8 @@ public class TokenIssuerTest
             PrivacyPassFixture.Values.IssuerPublicKey(),
             PrivacyPassFixture.Values.IssuerPrivateKeyPkcs8()));
 
-        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(true);
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync(A<string>._, A<int>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._))
+            .ReturnsLazily((string _, int requested, int _, TimeSpan _, CancellationToken _) => requested);
 
         _sut = new TokenIssuer(_fakeKeys, _fakeRateLimiter, NullLogger<TokenIssuer>.Instance);
     }
@@ -42,14 +43,27 @@ public class TokenIssuerTest
     }
 
     [Fact]
-    public async Task IssueAsync_Should_Count_One_Batch_Against_The_User()
+    public async Task IssueAsync_Should_Count_Every_Token_Against_The_User_Budget()
     {
         // Act
         await _sut.IssueAsync(UserId, [PrivacyPassFixture.Values.TokenRequest, PrivacyPassFixture.Values.TokenRequest]);
 
         // Assert
-        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync($"tokens:issue:{UserId}", 4, TimeSpan.FromHours(24), A<CancellationToken>._))
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync($"tokens:issue:{UserId}", 2, 30, TimeSpan.FromHours(24), A<CancellationToken>._))
             .MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task IssueAsync_Near_The_Budget_Should_Issue_Only_What_Fits()
+    {
+        // Arrange
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync(A<string>._, A<int>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(1);
+
+        // Act
+        var responses = await _sut.IssueAsync(UserId, [PrivacyPassFixture.Values.TokenRequest, PrivacyPassFixture.Values.TokenRequest]);
+
+        // Assert
+        responses.Should().Equal(PrivacyPassFixture.Values.TokenResponse);
     }
 
     [Fact]
@@ -60,14 +74,14 @@ public class TokenIssuerTest
 
         // Assert
         responses.Should().BeEmpty();
-        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync(A<string>._, A<int>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     [Fact]
-    public async Task IssueAsync_Over_The_Limit_Should_Return_None()
+    public async Task IssueAsync_Over_The_Budget_Should_Return_None()
     {
         // Arrange
-        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(false);
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync(A<string>._, A<int>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).Returns(0);
 
         // Act
         var responses = await _sut.IssueAsync(UserId, [PrivacyPassFixture.Values.TokenRequest]);
@@ -87,19 +101,20 @@ public class TokenIssuerTest
 
         // Assert
         responses.Should().BeEmpty();
-        A.CallTo(() => _fakeRateLimiter.IsAllowedAsync(A<string>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).MustNotHaveHappened();
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync(A<string>._, A<int>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     [Theory]
     [InlineData("not base64 ***")]
     [InlineData("AAAA")]
-    public async Task IssueAsync_Given_Malformed_Token_Request_Should_Return_None(string tokenRequest)
+    public async Task IssueAsync_Given_Malformed_Token_Request_Should_Return_None_And_Not_Count(string tokenRequest)
     {
         // Act
         var responses = await _sut.IssueAsync(UserId, [PrivacyPassFixture.Values.TokenRequest, tokenRequest]);
 
         // Assert
         responses.Should().BeEmpty();
+        A.CallTo(() => _fakeRateLimiter.ConsumeUpToAsync(A<string>._, A<int>._, A<int>._, A<TimeSpan>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     [Fact]

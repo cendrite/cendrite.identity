@@ -12,5 +12,7 @@ public interface IRateLimiter
     /// <returns>True if the call is allowed (and has been counted), false if the limit has been exceeded.</returns>
     Task<bool> IsAllowedAsync(string key, int limit, TimeSpan window, CancellationToken cancellationToken);
 
+    Task<int> ConsumeUpToAsync(string key, int requested, int limit, TimeSpan window, CancellationToken cancellationToken);
+
     Task ResetAsync(string key, CancellationToken cancellationToken);
 }

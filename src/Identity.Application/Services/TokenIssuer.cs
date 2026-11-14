@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using Identity.Application.Contracts.RateLimiting;
 using Identity.Application.Contracts.Repository;
 using Identity.Application.Interfaces;
+using Identity.Domain.Constants;
 using Microsoft.Extensions.Logging;
 using PrivacyPass.Issuance;
 
@@ -13,10 +14,7 @@ internal sealed class TokenIssuer(
     ILogger<TokenIssuer> logger)
     : ITokenIssuer
 {
-    public const int MaxTokenRequests = 3;
-
-    private static readonly TimeSpan IssuanceWindow = TimeSpan.FromHours(24);
-    private const int IssuanceCount = 4;
+    private static readonly TimeSpan IssuanceWindow = TimeSpan.FromHours(PrivateTokenConstants.IssuanceWindowHours);
 
     public async Task<IReadOnlyList<string>> IssueAsync(Guid userId, IReadOnlyList<string> tokenRequests, CancellationToken ct = default)
     {
@@ -31,17 +29,7 @@ internal sealed class TokenIssuer(
                 return [];
             }
 
-            if (!await rateLimiter.IsAllowedAsync($"tokens:issue:{userId}", IssuanceCount, IssuanceWindow, ct))
-            {
-                logger.LogInformation("User {UserId} reached the token issuance limit", userId);
-                return [];
-            }
-
-            using var rsa = RSA.Create();
-            rsa.ImportPkcs8PrivateKey(key.PrivateKey, out _);
-            var signer = new BlindSigner(rsa);
-
-            var tokenResponses = new List<string>(tokenRequests.Count);
+            var parsed = new List<TokenRequest>(tokenRequests.Count);
 
             foreach (var encoded in tokenRequests)
             {
@@ -51,10 +39,24 @@ internal sealed class TokenIssuer(
                     return [];
                 }
 
-                tokenResponses.Add(Convert.ToBase64String(signer.Sign(tokenRequest!).Encode()));
+                parsed.Add(tokenRequest!);
             }
 
-            return tokenResponses;
+            var granted = await rateLimiter.ConsumeUpToAsync(
+                $"tokens:issue:{userId}",
+                parsed.Count,
+                PrivateTokenConstants.IssuanceBudget,
+                IssuanceWindow,
+                ct);
+
+            if (granted < parsed.Count)
+                logger.LogInformation("User {UserId} reached the token issuance budget, issuing {Granted} of {Requested}", userId, granted, parsed.Count);
+
+            using var rsa = RSA.Create();
+            rsa.ImportPkcs8PrivateKey(key.PrivateKey, out _);
+            var signer = new BlindSigner(rsa);
+
+            return [.. parsed.Take(granted).Select(tokenRequest => Convert.ToBase64String(signer.Sign(tokenRequest).Encode()))];
         }
         catch (CryptographicException ex)
         {
